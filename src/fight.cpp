@@ -2,33 +2,43 @@
 #include "fight.hpp"
 
 namespace rpg {
-Fight::Fight(std::shared_ptr<Player> player) : m_pPlayer(player) {
-  std::uint64_t enemy_strength;
-  std::cout << "Choose enemy strength [Unsigned integer]: ";
-  std::cin >> enemy_strength;
-  m_Reward = enemy_strength;
+Fight::Fight(std::shared_ptr<Player> player, std::shared_ptr<Enemy> enemy)
+  : m_pEnemy(enemy), m_pPlayer(player), m_Reward(enemy->m_Exp) {}
 
-  char input;
-  std::cout << "Choose your enemy type [f - Fighter, m - Magician]: ";
-  std::cin >> input;
-  switch (input) {
-  case 'f':
-    m_pEnemy = std::make_shared<Fighter>(enemy_strength);
-    break;
-
-  case 'm':
-    m_pEnemy = std::make_shared<Magician>(enemy_strength);
-    break;
-
-  default:
-    m_pEnemy = std::make_shared<Fighter>(enemy_strength);
-    break;
-  }
+std::uint64_t Player::attack(std::shared_ptr<Enemy> enemy,
+                             std::uint64_t attack_damage,
+                             BodyPart body_part) {
+  const std::uint64_t raw_damage = this->m_Strength * attack_damage;
+  const std::uint64_t defense =
+      enemy->m_Equipment[body_part].m_Protection * enemy->m_Defense;
+  const std::uint64_t damage = raw_damage > defense ? raw_damage - defense : 0;
+  enemy->m_Health -= damage;
+  return damage;
 }
 
-void Fight::hit(std::shared_ptr<Player> who, std::shared_ptr<Player> whom,
-                std::uint64_t attack_damage, BodyPart body_part) {
-  who->attack(whom, attack_damage, body_part);
+std::uint64_t Enemy::attack(std::shared_ptr<Player> player,
+                            std::uint64_t attack_damage,
+                            BodyPart body_part) {
+  const std::uint64_t raw_damage = this->m_Strength * attack_damage;
+  const std::uint64_t defense =
+      player->m_Equipment[body_part].m_Protection * player->m_Defense;
+  const std::uint64_t damage = raw_damage > defense ? raw_damage - defense : 0;
+  player->m_Health -= damage;
+  return damage;
+}
+
+std::uint64_t Fight::PlayerHit(std::shared_ptr<Player> who,
+                               std::shared_ptr<Enemy> whom,
+                               std::uint64_t attack_damage,
+                               BodyPart body_part) {
+  return who->attack(whom, attack_damage, body_part);
+}
+
+std::uint64_t Fight::EnemyHit(std::shared_ptr<Enemy> who,
+                              std::shared_ptr<Player> whom,
+                              std::uint64_t attack_damage,
+                              BodyPart body_part) {
+  return who->attack(whom, attack_damage, body_part);
 }
 
 void Fight::loop() {
@@ -49,8 +59,12 @@ void Fight::loop() {
       spell_heal = 0;
     }
 
-    std::cout << "Player, health:" << m_pPlayer->m_Health << '\n';
-    std::cout << "Enemy, health:" << m_pEnemy->m_Health << '\n';
+    std::cout << "\n----------------------------------------\n"
+          << "              BATTLE STATUS\n"
+          << "----------------------------------------\n"
+          << "  Your health:  " << m_pPlayer->m_Health << '\n'
+          << "  Enemy health: " << m_pEnemy->m_Health << '\n'
+          << "----------------------------------------\n";
 
     if (players_turn) {
       BodyPart body_part;
@@ -58,13 +72,19 @@ void Fight::loop() {
       std::uint64_t attack_damage;
 
       char input;
-      std::cout << "What do you want to do? [a - Attack, h - Heal yourself "
-                   "(50%), d - Additional damage (50%)]: ";
+      std::cout << "Your turn\n"
+            << "  [a] Attack\n"
+            << "  [h] Heal yourself (costs 1 EXP, 50% chance)\n"
+            << "  [d] Cast additional damage (costs 2 EXP, 50% chance)\n"
+            << "Choose an action: ";
       std::cin >> input;
 
       if (input == 'a') {
-        std::cout << "Where do you want to hit your enemy? [b - Boots (50%), c "
-                     "- Chest (90%), h - Head (20%)]: ";
+        std::cout << "Choose a target\n"
+            << "  [b] Boots  (50% chance, power 4)\n"
+            << "  [c] Chest  (90% chance, power 2)\n"
+            << "  [h] Head   (20% chance, power 5)\n"
+            << "Choose a target: ";
         std::cin >> input;
         switch (input) {
         case 'b':
@@ -93,21 +113,25 @@ void Fight::loop() {
         }
 
         if (distribution(engine) < chance) {
-          hit(m_pPlayer, m_pEnemy, attack_damage, body_part);
+          const std::uint64_t damage =
+              PlayerHit(m_pPlayer, m_pEnemy, attack_damage, body_part);
+          std::cout << "You hit the enemy for " << damage << " damage!\n";
+        } else {
+          std::cout << "You missed!\n";
         }
       } else if (input == 'h') {
         if (1 <= m_pPlayer->m_Exp) {
           if (distribution(engine) < 50) {
             spell_heal = 10;
 
-            std::cout << "Spell casted!\n";
+            std::cout << "\n  Heal spell succeeded: +10 health.\n";
           } else {
-            std::cout << "You don't have enough luck!\n";
+            std::cout << "\n  The heal spell failed.\n";
           }
 
           m_pPlayer->m_Exp -= 1;
         } else {
-          std::cout << "You don't have enough exp!\n\n\n";
+          std::cout << "\n  Not enough EXP.\n";
           continue;
         }
       } else if (input == 'd') {
@@ -116,14 +140,14 @@ void Fight::loop() {
           if (distribution(engine) < 50) {
             spell_damage = 10;
 
-            std::cout << "Spell casted!\n";
+            std::cout << "\n  Damage spell succeeded: +10 damage.\n";
           } else {
-            std::cout << "You don't have enough luck!\n";
+            std::cout << "\n  The damage spell failed.\n";
           }
 
           m_pPlayer->m_Exp -= 2;
         } else {
-          std::cout << "You don't have enough exp!\n\n\n";
+          std::cout << "\n  Not enough EXP.\n";
           continue;
         }
       }
@@ -133,39 +157,44 @@ void Fight::loop() {
 
       players_turn = false;
     } else {
-      std::cout << "Enemy attacks!\n";
+      std::cout << "Enemy turn\n";
 
       if (distribution(engine) < 50) {
         std::uint64_t random = distribution(engine);
 
+        std::uint64_t damage = 0;
         if (random <= 33) {
-
-          hit(m_pEnemy, m_pPlayer, 1, BodyPart::BOOTS);
+          damage = EnemyHit(m_pEnemy, m_pPlayer, 1, BodyPart::BOOTS);
         } else if (random > 33 && random <= 66) {
-
-          hit(m_pEnemy, m_pPlayer, 1, BodyPart::CHEST);
+          damage = EnemyHit(m_pEnemy, m_pPlayer, 1, BodyPart::CHEST);
         } else if (random > 66) {
-
-          hit(m_pEnemy, m_pPlayer, 1, BodyPart::HEAD);
+          damage = EnemyHit(m_pEnemy, m_pPlayer, 1, BodyPart::HEAD);
         }
 
-        std::cout << "Enemy hit you!\n";
+        std::cout << "  Enemy dealt " << damage << " damage.\n";
       } else {
-        std::cout << "Enemy missed!\n";
+        std::cout << "  The enemy missed.\n";
       }
 
       players_turn = true;
     }
 
-    std::cout << "\n\n";
+    std::cout << '\n';
   }
 
   if (m_pEnemy->m_Health <= 0) {
-    std::cout << "Enemy died, you won\n";
+    std::cout << "\n========================================\n"
+          << "              VICTORY!\n"
+          << "========================================\n"
+          << "  Reward: " << m_Reward << " EXP and " << m_Reward
+          << " gold.\n";
     m_pPlayer->m_Money += m_Reward;
     m_pPlayer->m_Exp += m_Reward;
   } else {
-    std::cout << "You died, enemy won\n";
+    std::cout << "\n========================================\n"
+          << "              DEFEAT\n"
+          << "========================================\n"
+          << "  You were defeated by the enemy.\n";
   }
 }
 } // namespace rpg

@@ -7,8 +7,15 @@ void Shop::loop() {
   while (input != 'q') {
     BodyPart body_part;
     std::uint64_t armor_strength;
-    std::cout << "What body part armor do you want to buy? [b - Boots, c - "
-                 "Chest, h - Head, q - Quit]: ";
+    std::cout << "\n----------------------------------------\n"
+              << "                 ARMOR SHOP\n"
+              << "----------------------------------------\n"
+              << "  Your gold: " << m_pPlayer->m_Money << '\n'
+              << "  [b] Boots\n"
+              << "  [c] Chest\n"
+              << "  [h] Head\n"
+              << "  [q] Leave shop\n"
+              << "Choose an option: ";
     std::cin >> input;
     switch (input) {
     case 'b':
@@ -28,15 +35,15 @@ void Shop::loop() {
     }
 
     if (input != 'q') {
-      std::cout << "Choose armor strength [Unsigned integer]: ";
+      std::cout << "Enter armor protection value: ";
       std::cin >> armor_strength;
 
       if (armor_strength <= m_pPlayer->m_Money) {
         m_pPlayer->m_Equipment[body_part] = Equipment(armor_strength);
         m_pPlayer->m_Money -= armor_strength;
-        std::cout << "Ordered!\n";
+        std::cout << "Armor purchased successfully.\n";
       } else {
-        std::cout << "You don't have enough money!\n";
+        std::cout << "You do not have enough gold for that armor.\n";
       }
     }
   }

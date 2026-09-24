@@ -3,7 +3,9 @@
 
 // local
 #include "fight.hpp"
-#include "player_classes/player_classes.hpp"
+#include "enemy_classes/goblin.hpp"
+#include "player_classes/fighter.hpp"
+#include "player_classes/magician.hpp"
 #include "shop.hpp"
 
 // std
@@ -12,7 +14,12 @@
 namespace rpg {
 void Game::setup() {
   char input;
-  std::cout << "Choose your fighter [f - Fighter, m - Magician]: ";
+  std::cout << "\n========================================\n"
+            << "             CHARACTER SELECT\n"
+            << "========================================\n"
+            << "  [f] Fighter\n"
+            << "  [m] Magician\n"
+            << "Choose your class: ";
   std::cin >> input;
   switch (input) {
   case 'f':
@@ -32,10 +39,15 @@ void Game::setup() {
 void Game::loop() {
   while (m_pPlayer->m_Health > 0) {
     char input;
-    std::cout << "What do you want to do? [f - Fight, s - Shop]: ";
+    std::cout << "\n----------------------------------------\n"
+              << "                 MENU\n"
+              << "----------------------------------------\n"
+              << "  [f] Fight\n"
+              << "  [s] Shop\n"
+              << "Choose an action: ";
     std::cin >> input;
     if (input == 'f') {
-      Fight fight(m_pPlayer);
+      Fight fight(m_pPlayer, std::make_shared<Goblin>());
       fight.loop();
     } else if (input == 's') {
       Shop shop(m_pPlayer);

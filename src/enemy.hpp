@@ -3,7 +3,6 @@
 // local
 #include "equipment.hpp"
 
-
 // std
 #include <cstdint>
 #include <memory>
@@ -11,13 +10,13 @@
 
 namespace rpg {
 
-class Enemy;
+class Player;
 
-class Player {
+class Enemy {
 public:
-  virtual ~Player() = default;
+  virtual ~Enemy() = default;
 
-  virtual std::uint64_t attack(std::shared_ptr<Enemy> enemy,
+  virtual std::uint64_t attack(std::shared_ptr<Player> player,
                                std::uint64_t attack_damage,
                                BodyPart body_part);
 
