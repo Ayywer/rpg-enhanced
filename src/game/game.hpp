@@ -1,7 +1,7 @@
 #pragma once
 
 // local
-#include "player.hpp"
+#include "../player/player.hpp"
 
 // std
 #include <cstdint>

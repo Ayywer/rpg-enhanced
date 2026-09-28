@@ -15,7 +15,7 @@ class Equipment {
 public:
   Equipment() = default;
   Equipment(std::uint64_t protection) : m_Protection(protection) {}
-  std::uint64_t m_Protection = 1;
+  std::uint64_t m_Protection = 0;
 };
 
 } // namespace rpg

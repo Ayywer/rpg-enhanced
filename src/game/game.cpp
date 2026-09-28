@@ -3,9 +3,8 @@
 
 // local
 #include "fight.hpp"
-#include "enemy_classes/goblin.hpp"
-#include "player_classes/fighter.hpp"
-#include "player_classes/magician.hpp"
+#include "class_selection.hpp"
+#include "../enemy/enemy_classes/goblin.hpp"
 #include "shop.hpp"
 
 // std
@@ -21,19 +20,7 @@ void Game::setup() {
             << "  [m] Magician\n"
             << "Choose your class: ";
   std::cin >> input;
-  switch (input) {
-  case 'f':
-    m_pPlayer = std::make_shared<Fighter>();
-    break;
-
-  case 'm':
-    m_pPlayer = std::make_shared<Magician>();
-    break;
-
-  default:
-    m_pPlayer = std::make_shared<Fighter>();
-    break;
-  }
+  m_pPlayer = create_player_from_choice(input);
 }
 
 void Game::loop() {

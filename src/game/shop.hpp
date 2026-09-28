@@ -2,7 +2,7 @@
 
 // local
 #include "equipment.hpp"
-#include "player.hpp"
+#include "../player/player.hpp"
 
 // std
 #include <cstdint>
