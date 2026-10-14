@@ -1,8 +1,8 @@
 #include "class_selection.hpp"
 
 // local
-#include "../player/player_classes/fighter.hpp"
-#include "../player/player_classes/magician.hpp"
+#include "../../player/player_classes/fighter.hpp"
+#include "../../player/player_classes/magician.hpp"
 
 namespace rpg {
 

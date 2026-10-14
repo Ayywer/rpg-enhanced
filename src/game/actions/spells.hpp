@@ -1,8 +1,8 @@
 #pragma once
 
 // local
-#include "../player/player.hpp"
-#include "../enemy/enemy.hpp"
+#include "../../player/player.hpp"
+#include "../../enemy/enemy.hpp"
 
 // std
 #include <cstdint>

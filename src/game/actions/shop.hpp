@@ -1,8 +1,8 @@
 #pragma once
 
 // local
-#include "equipment.hpp"
-#include "../player/player.hpp"
+#include "../../equipment.hpp"
+#include "../../player/player.hpp"
 
 // std
 #include <cstdint>

@@ -1,9 +1,9 @@
 #pragma once
 
 // local
-#include "../equipment.hpp"
-#include "../enemy/enemy.hpp"
-#include "../player/player.hpp"
+#include "../../equipment.hpp"
+#include "../../enemy/enemy.hpp"
+#include "../../player/player.hpp"
 
 // std
 #include <cstdint>

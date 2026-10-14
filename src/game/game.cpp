@@ -2,10 +2,10 @@
 #include "game.hpp"
 
 // local
-#include "fight.hpp"
-#include "class_selection.hpp"
+#include "actions/fight.hpp"
+#include "actions/class_selection.hpp"
 #include "../enemy/enemy_classes/goblin.hpp"
-#include "shop.hpp"
+#include "actions/shop.hpp"
 
 // std
 #include <iostream>

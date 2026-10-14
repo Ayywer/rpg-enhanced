@@ -1,18 +1,15 @@
 #pragma once
 
 // local
-#include "equipment.hpp"
-#include "../player/player.hpp"
-#include "../player/player_classes/player_classes.hpp"
-#include "../enemy/enemy.hpp"
-#include "../enemy/enemy_classes/enemy_classes.hpp"
-#include "attack.hpp"
-#include "spells.hpp"
-#include "leveling.hpp"
+#include "../../equipment.hpp"
+#include "../../player/player.hpp"
+#include "../../enemy/enemy.hpp"
+#include "fight_actions.hpp"
+
 // std
 #include <cstdint>
-#include <iostream>
-#include <random>
+#include <memory>
+#include <string>
 
 namespace rpg {
 
@@ -21,6 +18,9 @@ public:
   Fight(std::shared_ptr<Player> player, std::shared_ptr<Enemy> enemy);
 
   void loop();
+
+  void register_action(char key, std::string label,
+                       FightActionHandler handler);
 
   std::uint64_t PlayerHit(std::shared_ptr<Player> who,
                           std::shared_ptr<Enemy> whom,
@@ -33,6 +33,7 @@ public:
 private:
   std::shared_ptr<Enemy> m_pEnemy;
   std::shared_ptr<Player> m_pPlayer;
+  FightActions m_Actions;
 
   std::uint64_t m_ExpReward;
   std::uint64_t m_MoneyReward;

@@ -7,9 +7,9 @@ void Shop::loop() {
   while (input != 'q') {
     BodyPart body_part;
     std::uint64_t armor_strength;
-    std::cout << "\n----------------------------------------\n"
+    std::cout << "<---------------------------------------->\n"
               << "                 ARMOR SHOP\n"
-              << "----------------------------------------\n"
+              << "<---------------------------------------->\n"
               << "  Your gold: " << m_pPlayer->m_Money << '\n'
               << "  [b] Boots\n"
               << "  [c] Chest\n"
