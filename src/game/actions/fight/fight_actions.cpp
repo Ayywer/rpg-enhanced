@@ -4,8 +4,37 @@
 #include "spells.hpp"
 
 #include <iostream>
+#include <utility>
 
 namespace rpg {
+namespace {
+
+struct AttackChoice {
+    BodyPart body_part;
+    std::uint64_t hit_chance;
+    std::uint64_t damage_multiplier;
+};
+
+AttackChoice choose_attack() {
+    char input;
+    std::cout << "Choose a hit point \n"
+              << "[b] Head  (20% chance)\n"
+              << "[c] Chest  (90% chance)\n"
+              << "[h] Head   (50% chance)\n"
+              << "Your action: ";
+    std::cin >> input;
+
+    switch (input) {
+    case 'b':
+        return {BodyPart::BOOTS, 50, 4};
+    case 'h':
+        return {BodyPart::HEAD, 20, 5};
+    default:
+        return {BodyPart::CHEST, 90, 2};
+    }
+}
+
+} // namespace
 
 std::uint64_t FightActionContext::roll_percent() {
     std::uniform_int_distribution<std::uint64_t> distribution(1, 100);
@@ -14,39 +43,11 @@ std::uint64_t FightActionContext::roll_percent() {
 
 FightActions::FightActions() {
     register_action('a', "Attack", [](FightActionContext& context) {
-        BodyPart body_part = BodyPart::CHEST;
-        std::uint64_t chance = 90;
-        std::uint64_t attack_damage = 2;
-
-        char input;
-        std::cout << "Choose a hit point \n"
-                  << "[b] Boots  (50% chance)\n"
-                  << "[c] Chest  (90% chance)\n"
-                  << "[h] Head   (20% chance)\n"
-                  << "Your action: ";
-        std::cin >> input;
-
-        switch (input) {
-        case 'b':
-            body_part = BodyPart::BOOTS;
-            chance = 50;
-            attack_damage = 4;
-            break;
-        case 'h':
-            body_part = BodyPart::HEAD;
-            chance = 20;
-            attack_damage = 5;
-            break;
-        default:
-            body_part = BodyPart::CHEST;
-            chance = 90;
-            attack_damage = 2;
-            break;
-        }
-
-        if (context.roll_percent() < chance) {
+        const AttackChoice choice = choose_attack();
+        if (context.roll_percent() <= choice.hit_chance) {
             const std::uint64_t damage = perform_attack(
-                    context.player, context.enemy, attack_damage, body_part);
+                    context.player, context.enemy, choice.damage_multiplier,
+                    choice.body_part);
             std::cout << "You hit the enemy for " << damage << " damage!\n";
         } else {
             std::cout << "You missed!\n";
@@ -55,16 +56,16 @@ FightActions::FightActions() {
     });
 
     register_action('h', "Heal yourself (costs 1 mana, 50% chance)",
-                                    [](FightActionContext& context) {
+                    [](FightActionContext& context) {
         if (context.player->m_Mana < 1) {
             std::cout << "\n  Not enough mana.\n";
             return FightActionResult::RETRY;
         }
 
-        if (context.roll_percent() < 50) {
+        if (context.roll_percent() <= 50) {
             const SpellResult result = cast_heal(context.player);
             std::cout << "\n  Heal spell succeeded: +" << result.heal
-                                << " health.\n";
+                      << " health.\n";
         } else {
             std::cout << "\n  The heal spell failed.\n";
         }
@@ -72,17 +73,17 @@ FightActions::FightActions() {
     });
 
     register_action('d', "Cast additional damage (costs 2 mana, 50% chance)",
-                                    [](FightActionContext& context) {
+                    [](FightActionContext& context) {
         if (context.player->m_Mana < 2) {
             std::cout << "\n  Not enough mana.\n";
             return FightActionResult::RETRY;
         }
 
-        if (context.roll_percent() < 50) {
+        if (context.roll_percent() <= 50) {
             const SpellResult result =
                     cast_damage_spell(context.player, context.enemy);
             std::cout << "\n  Damage spell succeeded: +" << result.damage
-                                << " damage.\n";
+                  << " damage.\n";
         } else {
             std::cout << "\n  The damage spell failed.\n";
         }
@@ -91,7 +92,7 @@ FightActions::FightActions() {
 }
 
 void FightActions::register_action(char key, std::string label,
-                                                                     FightActionHandler handler) {
+                                  FightActionHandler handler) {
     for (Action& action : m_Actions) {
         if (action.key == key) {
             action.label = std::move(label);
@@ -120,18 +121,18 @@ FightActionResult FightActions::execute(char key,
 }
 
 void perform_enemy_turn(FightActionContext& context) {
-    if (context.roll_percent() < 50) {
+    if (context.roll_percent() <= 50) {
         const std::uint64_t target = context.roll_percent();
         std::uint64_t damage = 1;
         if (target <= 33) {
             damage = perform_enemy_attack(context.enemy, context.player, 4,
-                                                                        BodyPart::BOOTS);
+                                          BodyPart::BOOTS);
         } else if (target <= 66) {
             damage = perform_enemy_attack(context.enemy, context.player, 2,
-                                                                        BodyPart::CHEST);
+                                          BodyPart::CHEST);
         } else {
             damage = perform_enemy_attack(context.enemy, context.player, 5,
-                                                                        BodyPart::HEAD);
+                                          BodyPart::HEAD);
         }
         std::cout << "Enemy dealt " << damage << " damage.\n";
     } else {

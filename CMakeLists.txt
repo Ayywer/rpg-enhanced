@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.12)
 project(rpg VERSION 0.0.1 LANGUAGES CXX)
 
 # Set C++ standard
@@ -19,11 +19,8 @@ function(enable_cxx_compiler_flag_if_supported flag)
 	endif()
 endfunction()
 
-# Sources
+# Collect implementation files under src/.
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
-
-# Headers
-file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS src/*.hpp)
 
 # Enable extra warnings
 enable_cxx_compiler_flag_if_supported("-Wall")

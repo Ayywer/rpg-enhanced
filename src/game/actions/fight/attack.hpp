@@ -1,7 +1,7 @@
 #pragma once
 
 // local
-#include "../../equipment.hpp"
+#include "../../player/equipment.hpp"
 #include "../../enemy/enemy.hpp"
 #include "../../player/player.hpp"
 
