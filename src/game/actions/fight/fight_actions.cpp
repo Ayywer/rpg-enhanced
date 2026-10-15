@@ -1,5 +1,6 @@
 #include "fight_actions.hpp"
 
+#include "../../console.hpp"
 #include "attack.hpp"
 #include "spells.hpp"
 
@@ -17,10 +18,12 @@ struct AttackChoice {
 
 AttackChoice choose_attack() {
     char input;
+    clear_console();
+    std::cout << std::endl;
     std::cout << "Choose a hit point \n"
-              << "[b] Head  (20% chance)\n"
+              << "[h] Head  (20% chance)\n"
               << "[c] Chest  (90% chance)\n"
-              << "[h] Head   (50% chance)\n"
+              << "[b] Boots   (50% chance)\n"
               << "Your action: ";
     std::cin >> input;
 
@@ -48,8 +51,10 @@ FightActions::FightActions() {
             const std::uint64_t damage = perform_attack(
                     context.player, context.enemy, choice.damage_multiplier,
                     choice.body_part);
+            std::cout << std::endl;
             std::cout << "You hit the enemy for " << damage << " damage!\n";
         } else {
+            std::cout << std::endl;
             std::cout << "You missed!\n";
         }
         return FightActionResult::TURN_CONSUMED;
@@ -134,8 +139,10 @@ void perform_enemy_turn(FightActionContext& context) {
             damage = perform_enemy_attack(context.enemy, context.player, 5,
                                           BodyPart::HEAD);
         }
+        std::cout << std::endl;
         std::cout << "Enemy dealt " << damage << " damage.\n";
     } else {
+        std::cout << std::endl;
         std::cout << "The enemy missed.\n";
     }
 }

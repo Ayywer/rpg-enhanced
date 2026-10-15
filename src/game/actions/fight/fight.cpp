@@ -1,6 +1,7 @@
 // header
 #include "fight.hpp"
 
+#include "../../console.hpp"
 #include "attack.hpp"
 #include "../../leveling.hpp"
 
@@ -41,6 +42,7 @@ void Fight::loop() {
   bool players_turn = true;
 
   while (m_pEnemy->m_Health > 0 && m_pPlayer->m_Health > 0) {
+    clear_console();
     std::cout << "<---------------------------------------->" << '\n'
               << "              BATTLE STATUS               " << '\n'
               << "<---------------------------------------->" << '\n'
@@ -50,6 +52,7 @@ void Fight::loop() {
               << "Your level:"    << m_pPlayer->m_Level       << '\n'
               << "<---------------------------------------->" << '\n'
               << "                 ENEMY                    " << '\n'
+              << "Enemy: "        << m_pEnemy->m_Name         << '\n'
               << "Enemy health:"  << m_pEnemy->m_Health       << '\n'
               << "Enemy level:"   << m_pEnemy->m_Level        << '\n'
               << "<---------------------------------------->" << '\n';
@@ -58,24 +61,28 @@ void Fight::loop() {
       char input;
       std::cout << "YOUR TURN\n";
       m_Actions.print_actions();
+      std::cout << std::endl;
       std::cout << "Choose an action: ";
       std::cin >> input;
 
       if (m_Actions.execute(input, context) == FightActionResult::RETRY) {
+        pause_for_enter();
         continue;
       }
 
       m_pPlayer->m_Mana += m_pPlayer->m_ManaRegenerationMultiplier;
-      std::cout << "  Mana regenerated: +" << m_pPlayer->m_ManaRegenerationMultiplier << ".\n";
+      std::cout << "Mana regenerated: +" << m_pPlayer->m_ManaRegenerationMultiplier << ".\n";
 
       if (m_pPlayer->m_Mana > m_pPlayer->m_MaxMana) {
         m_pPlayer->m_Mana = m_pPlayer->m_MaxMana;
       }
 
+      pause_for_enter();
       players_turn = false;
     } else {
       std::cout << "Enemy turn.\n";
       perform_enemy_turn(context);
+      pause_for_enter();
       players_turn = true;
     }
 
@@ -88,17 +95,18 @@ void Fight::loop() {
     std::cout << "\n========================================\n"
               << "              VICTORY!\n"
               << "========================================\n"
-              << "  Reward: " << m_ExpReward << " EXP and " << m_MoneyReward
+              << "Reward: " << m_ExpReward << " EXP and " << m_MoneyReward
               << " gold.\n";
 
     apply_level_progress(m_pPlayer, m_ExpReward);
-    std::cout << " Your Level progress: " << m_pPlayer->m_Exp << " / "
+    std::cout << "Your Level progress: " << m_pPlayer->m_Exp << " / "
               << m_pPlayer->m_MaxExp << " EXP\n";
   } else {
     std::cout << "\n========================================\n"
               << "              DEFEAT\n"
               << "========================================\n"
-              << "  You were defeated by the enemy.\n";
+              << "You were defeated by the enemy.\n";
   }
+  pause_for_enter();
 }
 } // namespace rpg

@@ -1,10 +1,13 @@
 // header
 #include "shop.hpp"
 
+#include "../../console.hpp"
+
 namespace rpg {
 void Shop::loop() {
   char input = 0;
   while (input != 'q') {
+    clear_console();
     BodyPart body_part;
     std::uint64_t armor_strength;
     std::cout << "<---------------------------------------->\n"
@@ -45,6 +48,7 @@ void Shop::loop() {
       } else {
         std::cout << "You do not have enough gold for that armor.\n";
       }
+      pause_for_enter();
     }
   }
 }

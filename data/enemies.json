@@ -1,0 +1,64 @@
+{
+  "enemies": [
+    {
+      "name": "Goblin",
+      "weight": 60,
+      "stats": {
+        "health": 50,
+        "strength": 2,
+        "defense": 1,
+        "experience": 5,
+        "money": 2,
+        "gems": 0
+      },
+      "per_level": {
+        "health": 10,
+        "strength": 1,
+        "defense": 0,
+        "experience": 2,
+        "money": 1,
+        "gems": 0
+      }
+    },
+    {
+      "name": "Orc",
+      "weight": 25,
+      "stats": {
+        "health": 85,
+        "strength": 4,
+        "defense": 2,
+        "experience": 10,
+        "money": 5,
+        "gems": 1
+      },
+      "per_level": {
+        "health": 15,
+        "strength": 1,
+        "defense": 1,
+        "experience": 3,
+        "money": 2,
+        "gems": 0
+      }
+    },
+    {
+      "name": "Troll",
+      "weight": 15,
+      "stats": {
+        "health": 130,
+        "strength": 6,
+        "defense": 4,
+        "experience": 18,
+        "money": 8,
+        "gems": 2
+      },
+      "per_level": {
+        "health": 20,
+        "strength": 2,
+        "defense": 1,
+        "experience": 5,
+        "money": 3,
+        "gems": 1
+      }
+    }
+  ]
+}

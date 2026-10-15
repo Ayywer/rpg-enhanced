@@ -6,6 +6,7 @@
 // std
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 namespace rpg {
@@ -17,6 +18,8 @@ public:
   virtual ~Player() = default;
 
   virtual std::uint64_t attack(std::shared_ptr<Enemy> enemy, std::uint64_t attack_damage, BodyPart body_part);
+
+  std::string m_ClassName;
   
   std::int64_t m_Health;
   std::uint64_t m_Defense;

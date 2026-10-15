@@ -1,0 +1,38 @@
+{
+  "classes": [
+    {
+      "key": "f",
+      "name": "Fighter",
+      "stats": {
+        "health": 100,
+        "strength": 10,
+        "defense": 1,
+        "mana": 0,
+        "max_mana": 10,
+        "mana_regeneration": 1,
+        "experience": 0,
+        "max_experience": 10,
+        "level": 1,
+        "money": 0,
+        "gems": 0
+      }
+    },
+    {
+      "key": "m",
+      "name": "Magician",
+      "stats": {
+        "health": 100,
+        "strength": 5,
+        "defense": 1,
+        "mana": 0,
+        "max_mana": 25,
+        "mana_regeneration": 2,
+        "experience": 0,
+        "max_experience": 10,
+        "level": 1,
+        "money": 0,
+        "gems": 0
+      }
+    }
+  ]
+}
