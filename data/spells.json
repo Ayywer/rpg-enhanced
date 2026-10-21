@@ -1,0 +1,53 @@
+{
+  "spells": [
+    {
+      "id": "mend",
+      "name": "Mend",
+      "description": "Restore health with a focused healing spell.",
+      "effect": "heal",
+      "mana_cost": 5,
+      "power": 15,
+      "success_chance": 75,
+      "learn_by_class": {
+        "Magician": 1
+      }
+    },
+    {
+      "id": "greater_mend",
+      "name": "Greater mend",
+      "description": "Restore a larger amount of health.",
+      "effect": "heal",
+      "mana_cost": 10,
+      "power": 35,
+      "success_chance": 65,
+      "learn_by_class": {
+        "Magician": 5 
+      }
+    },
+    {
+      "id": "arcane_bolt",
+      "name": "Arcane bolt",
+      "description": "Launch a bolt of magic at your opponent.",
+      "effect": "damage",
+      "mana_cost": 5,
+      "power": 10,
+      "success_chance": 85,
+      "learn_by_class": {
+        "Magician": 1,
+        "Fighter": 5
+      }
+    },
+    {
+      "id": "thunder_strike",
+      "name": "Thunder Strike",
+      "description": "A forceful strike that deals heavy damage.",
+      "effect": "damage",
+      "mana_cost": 15,
+      "power": 35,
+      "success_chance": 40,
+      "learn_by_class": {
+        "Magician": 5
+      }
+    }
+  ]
+}

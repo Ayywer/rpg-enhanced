@@ -4,12 +4,16 @@
 #include "player/player.hpp"
 #include "player/player_class_generator.hpp"
 #include "enemy/enemy_generator.hpp"
+#include "actions/fight/spells.hpp"
 
 namespace rpg {
 
 class Game {
 public:
-  Game() : m_EnemyGenerator(), m_PlayerClassGenerator() { setup(); }
+  Game()
+      : m_EnemyGenerator(), m_PlayerClassGenerator(), m_SpellDatabase() {
+    setup();
+  }
 
   void setup();
   void loop();
@@ -18,5 +22,6 @@ private:
   std::shared_ptr<Player> m_pPlayer;
   EnemyGenerator m_EnemyGenerator;
   PlayerClassGenerator m_PlayerClassGenerator;
+  SpellDatabase m_SpellDatabase;
 };
 } // namespace rpg

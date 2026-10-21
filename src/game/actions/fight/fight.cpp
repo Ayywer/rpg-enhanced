@@ -5,14 +5,48 @@
 #include "attack.hpp"
 #include "../../leveling.hpp"
 
-#include <iostream>
 #include <random>
+#include <string>
 #include <utility>
 
 namespace rpg {
-Fight::Fight(std::shared_ptr<Player> player, std::shared_ptr<Enemy> enemy) : 
-  m_pEnemy(enemy), m_pPlayer(player), m_ExpReward(enemy->m_RewardExp),
-  m_MoneyReward(enemy->m_RewardMoney), m_GemsReward(enemy->m_RewardGems) {}
+namespace {
+
+ftxui::Element battle_status(const std::shared_ptr<Player>& player,
+               const std::shared_ptr<Enemy>& enemy) {
+  const auto player_panel = ui::panel(
+    "YOU  /  " + player->m_ClassName,
+    ftxui::vbox({
+      ui::meter("HEALTH", static_cast<std::uint64_t>(player->m_Health), player->m_MaxHealth, ftxui::Color::Green),
+      ui::meter("MANA", player->m_Mana, player->m_MaxMana, ftxui::Color::BlueViolet),
+      ftxui::text("LEVEL " + std::to_string(player->m_Level)) | ftxui::color(ftxui::Color::Violet),
+
+    }),
+    ftxui::Color::RGB(91, 205, 183));
+
+  const auto enemy_panel = ui::panel(
+    "FOE  /  " + enemy->m_Name,
+    ftxui::vbox({
+      ui::meter("HEALTH", static_cast<std::uint64_t>( std::max<std::int64_t>(0, enemy->m_Health)), enemy->m_MaxHealth, ftxui::Color::Red),
+      ftxui::text("LEVEL  " + std::to_string(enemy->m_Level)) | ftxui::color(ftxui::Color::GrayLight),
+      ftxui::text(""),
+      ftxui::text("STRENGTH  " + std::to_string(enemy->m_Strength)) | ftxui::color(ftxui::Color::GrayLight),
+      ftxui::text("DEFENCE  " + std::to_string(enemy->m_Defense)) | ftxui::color(ftxui::Color::GrayLight),
+    }),
+    ftxui::Color::RGB(224, 95, 91));
+  return ftxui::hbox({player_panel, enemy_panel});
+}
+
+} // namespace
+
+Fight::Fight(std::shared_ptr<Player> player, std::shared_ptr<Enemy> enemy,
+             const SpellDatabase& spell_database)
+    : m_pEnemy(enemy),
+      m_pPlayer(player),
+      m_Actions(spell_database),
+      m_ExpReward(enemy->m_RewardExp),
+      m_MoneyReward(enemy->m_RewardMoney),
+      m_GemsReward(enemy->m_RewardGems) {}
 
 void Fight::register_action(char key, std::string label,
                             FightActionHandler handler) {
@@ -33,56 +67,48 @@ std::uint64_t Fight::EnemyHit(std::shared_ptr<Enemy> who,
 }
 
 void Fight::loop() {
-  m_pPlayer->m_Mana = m_pPlayer->m_MaxMana;
+  if (m_pPlayer->m_ClassName == "Mage") {
+    m_pPlayer->m_Mana = m_pPlayer->m_MaxMana;
+  }
 
   std::random_device rd;
   std::mt19937 engine(rd());
-  FightActionContext context{m_pPlayer, m_pEnemy, engine};
+  FightActionContext context{m_pPlayer, m_pEnemy, engine, {}};
 
   bool players_turn = true;
 
   while (m_pEnemy->m_Health > 0 && m_pPlayer->m_Health > 0) {
-    clear_console();
-    std::cout << "<---------------------------------------->" << '\n'
-              << "              BATTLE STATUS               " << '\n'
-              << "<---------------------------------------->" << '\n'
-              << "                 PLAYER                   " << '\n'
-              << "Your health:"   << m_pPlayer->m_Health      << '\n'
-              << "Your mana:"     << m_pPlayer->m_Mana        << '\n'
-              << "Your level:"    << m_pPlayer->m_Level       << '\n'
-              << "<---------------------------------------->" << '\n'
-              << "                 ENEMY                    " << '\n'
-              << "Enemy: "        << m_pEnemy->m_Name         << '\n'
-              << "Enemy health:"  << m_pEnemy->m_Health       << '\n'
-              << "Enemy level:"   << m_pEnemy->m_Level        << '\n'
-              << "<---------------------------------------->" << '\n';
-
     if (players_turn) {
-      char input;
-      std::cout << "YOUR TURN\n";
-      m_Actions.print_actions();
-      std::cout << std::endl;
-      std::cout << "Choose an action: ";
-      std::cin >> input;
+      const std::vector<std::string> actions = m_Actions.labels(*m_pPlayer);
+      const int selected = ui::choose_option(
+          "Your turn", actions, battle_status(m_pPlayer, m_pEnemy),
+          m_Actions.shortcuts());
+      if (selected < 0) {
+        break;
+      }
 
-      if (m_Actions.execute(input, context) == FightActionResult::RETRY) {
-        pause_for_enter();
+      context.message.clear();
+      if (m_Actions.execute(static_cast<std::size_t>(selected), context) ==
+          FightActionResult::RETRY) {
+        ui::notify("Action unavailable", context.message,
+                   ftxui::Color::RGB(232, 166, 76));
         continue;
       }
 
       m_pPlayer->m_Mana += m_pPlayer->m_ManaRegenerationMultiplier;
-      std::cout << "Mana regenerated: +" << m_pPlayer->m_ManaRegenerationMultiplier << ".\n";
-
       if (m_pPlayer->m_Mana > m_pPlayer->m_MaxMana) {
         m_pPlayer->m_Mana = m_pPlayer->m_MaxMana;
       }
-
-      pause_for_enter();
+      context.message += "\nMana regenerated: +" +
+                         std::to_string(m_pPlayer->m_ManaRegenerationMultiplier) +
+                         ".";
+      ui::notify("Your turn", context.message);
       players_turn = false;
     } else {
-      std::cout << "Enemy turn.\n";
+      context.message.clear();
       perform_enemy_turn(context);
-      pause_for_enter();
+      ui::notify("Enemy turn", context.message,
+                 ftxui::Color::RGB(224, 95, 91));
       players_turn = true;
     }
 
@@ -92,21 +118,39 @@ void Fight::loop() {
     m_pPlayer->m_Money += m_MoneyReward;
     m_pPlayer->m_Gems += m_GemsReward;
 
-    std::cout << "\n========================================\n"
-              << "              VICTORY!\n"
-              << "========================================\n"
-              << "Reward: " << m_ExpReward << " EXP and " << m_MoneyReward
-              << " gold.\n";
-
+    const std::uint64_t previous_level = m_pPlayer->m_Level;
     apply_level_progress(m_pPlayer, m_ExpReward);
-    std::cout << "Your Level progress: " << m_pPlayer->m_Exp << " / "
-              << m_pPlayer->m_MaxExp << " EXP\n";
+    const std::vector<std::string> learned_spells = m_Actions.learn_available(*m_pPlayer);
+    
+    std::string result = "You defeated " + m_pEnemy->m_Name +
+                         ".\n\nRewards: " + "\n" + 
+                         std::to_string(m_ExpReward) + " EXP\n" + 
+                         std::to_string(m_MoneyReward) + " Gold\n" + 
+                         std::to_string(m_GemsReward) + " Gems" + 
+                         "\n\nLevel:" + std::to_string(m_pPlayer->m_Level) + 
+                         "\nProgress: " + std::to_string(m_pPlayer->m_Exp) +
+                         "/" + std::to_string(m_pPlayer->m_MaxExp) + " EXP.";
+    
+    if (m_pPlayer->m_Level > previous_level) {
+      result += "\n\nYou reached level " + std::to_string(m_pPlayer->m_Level) + "!";
+      m_pPlayer->m_Health = m_pPlayer->m_MaxHealth; // temp
+    }
+
+    if (!learned_spells.empty()) {
+      result += "\n\nNew spells learned: ";
+      
+      for (std::size_t index = 0; index < learned_spells.size(); ++index) {
+        if (index != 0) {
+          result += ", ";
+        }
+        result += learned_spells[index];
+      }
+
+      result += ".";
+    }
+    ui::notify("Victory", result, ftxui::Color::RGB(91, 205, 183));
   } else {
-    std::cout << "\n========================================\n"
-              << "              DEFEAT\n"
-              << "========================================\n"
-              << "You were defeated by the enemy.\n";
+    ui::notify("GAME OVER", "You were defeated by " + m_pEnemy->m_Name + ".", ftxui::Color::RGB(224, 95, 91));
   }
-  pause_for_enter();
 }
 } // namespace rpg

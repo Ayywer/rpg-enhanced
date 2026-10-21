@@ -15,7 +15,8 @@ int main() {
 
   const std::shared_ptr<rpg::Player> fighter = generator.create('f');
   if (!fighter || fighter->m_ClassName != "Fighter" ||
-      fighter->m_Health != 100 || fighter->m_Strength != 10 ||
+      fighter->m_Health != 100 || fighter->m_MaxHealth != 100 ||
+      fighter->m_Strength != 10 || fighter->m_Mana != 10 ||
       fighter->m_MaxMana != 10 || fighter->m_ManaRegenerationMultiplier != 1 ||
       fighter->m_Money != 0 || fighter->m_Gems != 0) {
     std::cerr << "Fighter stats do not match the database\n";
@@ -24,7 +25,8 @@ int main() {
 
   const std::shared_ptr<rpg::Player> magician = generator.create('m');
   if (!magician || magician->m_ClassName != "Magician" ||
-      magician->m_Health != 100 || magician->m_Strength != 5 ||
+      magician->m_Health != 50 || magician->m_MaxHealth != 50 ||
+      magician->m_Strength != 5 || magician->m_Mana != 25 ||
       magician->m_MaxMana != 25 || magician->m_ManaRegenerationMultiplier != 2) {
     std::cerr << "Magician stats do not match the database\n";
     return 1;

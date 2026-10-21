@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 project(rpg VERSION 0.0.1 LANGUAGES CXX)
 
 # Set C++ standard
@@ -7,6 +7,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(JSONC REQUIRED IMPORTED_TARGET json-c)
+
+include(FetchContent)
+set(FTXUI_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(FTXUI_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(FTXUI_BUILD_MODULES OFF CACHE BOOL "" FORCE)
+set(FTXUI_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(FTXUI_BUILD_TESTS_FUZZER OFF CACHE BOOL "" FORCE)
+set(FTXUI_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(ftxui
+	GIT_REPOSITORY https://github.com/ArthurSonzogni/FTXUI.git
+	GIT_TAG v7.0.3
+	GIT_SHALLOW TRUE)
+FetchContent_MakeAvailable(ftxui)
 
 include(CheckCXXCompilerFlag)
 
@@ -35,14 +48,16 @@ add_executable(${PROJECT_NAME})
 
 # Add source files
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
-target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::JSONC)
+target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::JSONC ftxui::ftxui)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
 	RPG_ENEMY_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/enemies.json"
-	RPG_PLAYER_CLASS_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/player_classes.json")
+	RPG_PLAYER_CLASS_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/player_classes.json"
+	RPG_SPELL_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/spells.json")
 
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/data")
 configure_file(data/enemies.json "${CMAKE_CURRENT_BINARY_DIR}/data/enemies.json" COPYONLY)
 configure_file(data/player_classes.json "${CMAKE_CURRENT_BINARY_DIR}/data/player_classes.json" COPYONLY)
+configure_file(data/spells.json "${CMAKE_CURRENT_BINARY_DIR}/data/spells.json" COPYONLY)
 
 # Add include directories
 target_include_directories(${PROJECT_NAME} PRIVATE src)
@@ -67,4 +82,13 @@ if(BUILD_TESTING)
 	target_compile_definitions(player_class_generator_test PRIVATE
 		RPG_PLAYER_CLASS_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/player_classes.json")
 	add_test(NAME player_class_generator_test COMMAND player_class_generator_test)
+	add_executable(spell_database_test
+		tests/spell_database_test.cpp
+		src/game/actions/fight/spells.cpp
+		src/game/actions/fight/attack.cpp)
+	target_include_directories(spell_database_test PRIVATE src)
+	target_link_libraries(spell_database_test PRIVATE PkgConfig::JSONC)
+	target_compile_definitions(spell_database_test PRIVATE
+		RPG_SPELL_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/spells.json")
+	add_test(NAME spell_database_test COMMAND spell_database_test)
 endif()

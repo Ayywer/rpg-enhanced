@@ -21,6 +21,7 @@ public:
 
   std::string m_Name;
   std::int64_t m_Health;
+  std::uint64_t m_MaxHealth = 0;
   std::uint64_t m_Defense;
   
   std::uint64_t m_Strength;

@@ -12,6 +12,10 @@ int main() {
       std::cerr << "Generated enemy has the wrong level\n";
       return 1;
     }
+    if (enemy->m_MaxHealth != static_cast<std::uint64_t>(enemy->m_Health)) {
+      std::cerr << "Generated enemy has an incorrect maximum health value\n";
+      return 1;
+    }
 
     bool stats_match = false;
     if (enemy->m_Name == "Goblin") {

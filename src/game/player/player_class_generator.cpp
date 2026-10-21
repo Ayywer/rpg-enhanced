@@ -133,10 +133,11 @@ std::shared_ptr<Player> PlayerClassGenerator::create(char key) const {
     auto player = std::make_shared<Player>();
     player->m_ClassName = definition.choice.name;
     player->m_Health = static_cast<std::int64_t>(definition.stats.health);
+    player->m_MaxHealth = definition.stats.health;
     player->m_Strength = definition.stats.strength;
     player->m_Defense = definition.stats.defense;
-    player->m_Mana = definition.stats.mana;
     player->m_MaxMana = definition.stats.max_mana;
+    player->m_Mana = player->m_MaxMana;
     player->m_ManaRegenerationMultiplier = definition.stats.mana_regeneration;
     player->m_Exp = definition.stats.experience;
     player->m_MaxExp = definition.stats.max_experience;

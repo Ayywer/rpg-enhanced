@@ -6,9 +6,9 @@
       "stats": {
         "health": 100,
         "strength": 10,
-        "defense": 1,
+        "defense": 5,
         "mana": 0,
-        "max_mana": 10,
+        "max_mana": 5,
         "mana_regeneration": 1,
         "experience": 0,
         "max_experience": 10,
@@ -21,7 +21,7 @@
       "key": "m",
       "name": "Magician",
       "stats": {
-        "health": 100,
+        "health": 50,
         "strength": 5,
         "defense": 1,
         "mana": 0,
