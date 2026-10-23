@@ -1,0 +1,60 @@
+{
+    "items": [
+        {
+            "id": "healing-potion",
+            "name": "Healing Potion",
+            "type": "potions",
+            "effect": "heal",
+            "use_function": "healing_potion",
+            "power": 24,
+            "max_quantity": 5,
+            "price": 4
+        },
+        {
+            "id": "mana-potion",
+            "name": "Mana Potion",
+            "type": "potions",
+            "effect": "restore_mana",
+            "use_function": "mana_potion",
+            "power": 16,
+            "max_quantity": 5,
+            "price": 4
+        },
+        {
+            "id": "fire-scroll",
+            "name": "Fire Scroll",
+            "type": "scrolls",
+            "effect": "learn_spell",
+            "use_function": "fire_scroll",
+            "spell_id": "fire_scroll",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 7
+        },
+        {
+            "id": "lightning-scroll",
+            "name": "Lightning Scroll",
+            "type": "scrolls",
+            "effect": "learn_spell",
+            "use_function": "lightning_scroll",
+            "spell_id": "thunder_strike",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 18
+        },
+        {
+            "id": "amber-relic",
+            "name": "Amber Relic",
+            "type": "relic",
+            "effect": "activate_relic",
+            "use_function": "amber_relic",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 20,
+            "bonuses": {
+                "strength": 2,
+                "defense": 1
+            }
+        }
+    ]
+}

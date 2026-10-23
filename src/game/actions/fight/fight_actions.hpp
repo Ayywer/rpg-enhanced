@@ -2,6 +2,7 @@
 
 #include "../../enemy/enemy.hpp"
 #include "../../player/player.hpp"
+#include "../../player/item_use_registry.hpp"
 #include "spells.hpp"
 
 #include <cstddef>
@@ -32,7 +33,8 @@ using FightActionHandler =
 
 class FightActions {
 public:
-  explicit FightActions(const SpellDatabase& spell_database);
+  FightActions(const SpellDatabase& spell_database,
+               const ItemUseRegistry& item_use_registry);
 
   void register_action(char key, std::string label,
                        FightActionHandler handler);
@@ -51,6 +53,7 @@ private:
 
   std::vector<Action> m_Actions;
   const SpellDatabase& m_SpellDatabase;
+  const ItemUseRegistry& m_ItemUseRegistry;
 };
 
 void perform_enemy_turn(FightActionContext& context);

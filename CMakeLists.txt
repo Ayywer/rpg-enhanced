@@ -52,12 +52,16 @@ target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::JSONC ftxui::ftxui)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
 	RPG_ENEMY_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/enemies.json"
 	RPG_PLAYER_CLASS_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/player_classes.json"
-	RPG_SPELL_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/spells.json")
+	RPG_SPELL_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/spells.json"
+	RPG_ITEM_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/items.json"
+	RPG_EQUIPMENT_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/equipment.json")
 
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/data")
 configure_file(data/enemies.json "${CMAKE_CURRENT_BINARY_DIR}/data/enemies.json" COPYONLY)
 configure_file(data/player_classes.json "${CMAKE_CURRENT_BINARY_DIR}/data/player_classes.json" COPYONLY)
 configure_file(data/spells.json "${CMAKE_CURRENT_BINARY_DIR}/data/spells.json" COPYONLY)
+configure_file(data/items.json "${CMAKE_CURRENT_BINARY_DIR}/data/items.json" COPYONLY)
+configure_file(data/equipment.json "${CMAKE_CURRENT_BINARY_DIR}/data/equipment.json" COPYONLY)
 
 # Add include directories
 target_include_directories(${PROJECT_NAME} PRIVATE src)
@@ -82,6 +86,12 @@ if(BUILD_TESTING)
 	target_compile_definitions(player_class_generator_test PRIVATE
 		RPG_PLAYER_CLASS_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/player_classes.json")
 	add_test(NAME player_class_generator_test COMMAND player_class_generator_test)
+	add_executable(leveling_test
+		tests/leveling_test.cpp
+		src/game/leveling.cpp
+		src/game/actions/fight/attack.cpp)
+	target_include_directories(leveling_test PRIVATE src)
+	add_test(NAME leveling_test COMMAND leveling_test)
 	add_executable(spell_database_test
 		tests/spell_database_test.cpp
 		src/game/actions/fight/spells.cpp
@@ -91,4 +101,26 @@ if(BUILD_TESTING)
 	target_compile_definitions(spell_database_test PRIVATE
 		RPG_SPELL_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/spells.json")
 	add_test(NAME spell_database_test COMMAND spell_database_test)
+	add_executable(inventory_test
+		tests/inventory_test.cpp
+		src/game/player/player.cpp
+		src/game/player/item_use_registry.cpp
+		src/game/player/items/healing_potion.cpp
+		src/game/player/items/mana_potion.cpp
+		src/game/player/items/fire_scroll.cpp
+		src/game/player/items/lightning_scroll.cpp
+		src/game/player/items/amber_relic.cpp
+		src/game/actions/fight/attack.cpp)
+	target_include_directories(inventory_test PRIVATE src)
+	add_test(NAME inventory_test COMMAND inventory_test)
+	add_executable(item_database_test tests/item_database_test.cpp
+		src/game/player/item_database.cpp)
+	target_include_directories(item_database_test PRIVATE src)
+	target_link_libraries(item_database_test PRIVATE PkgConfig::JSONC)
+	target_compile_definitions(item_database_test PRIVATE
+		RPG_ITEM_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/items.json")
+	# Item catalog test also validates equipment definitions in their own file.
+	target_compile_definitions(item_database_test PRIVATE
+		RPG_EQUIPMENT_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/equipment.json")
+	add_test(NAME item_database_test COMMAND item_database_test)
 endif()

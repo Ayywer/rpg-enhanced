@@ -41,8 +41,10 @@ std::uint64_t FightActionContext::roll_percent() {
     return distribution(random_engine);
 }
 
-FightActions::FightActions(const SpellDatabase& spell_database)
-    : m_SpellDatabase(spell_database) {
+FightActions::FightActions(const SpellDatabase& spell_database,
+                                                     const ItemUseRegistry& item_use_registry)
+        : m_SpellDatabase(spell_database),
+            m_ItemUseRegistry(item_use_registry) {
     register_action('a', "Attack", [](FightActionContext& context) {
         const std::optional<AttackChoice> choice = choose_attack();
         if (!choice) {
@@ -60,7 +62,39 @@ FightActions::FightActions(const SpellDatabase& spell_database)
         }
         return FightActionResult::TURN_CONSUMED;
     });
-
+    register_action('i', "Use item", [this](FightActionContext& context) {
+        std::vector<const ItemStack*> usable_items;
+        std::vector<std::string> choices;
+        for (const ItemStack& stack : context.player->m_Inventory) {
+            if (stack.item.type == ItemType::EQUIPMENT ||
+                stack.item.type == ItemType::RELIC || stack.quantity == 0) {
+                continue;
+            }
+            usable_items.push_back(&stack);
+            choices.push_back(stack.item.name + "  x" +
+                              std::to_string(stack.quantity));
+        }
+        if (choices.empty()) {
+            context.message = "You have no usable items.";
+            return FightActionResult::RETRY;
+        }
+        choices.push_back("Back to actions");
+        const int selected = ui::choose_option("Choose an item", choices);
+        if (selected < 0 || selected >= static_cast<int>(usable_items.size())) {
+            context.message = "You returned to the action menu.";
+            return FightActionResult::RETRY;
+        }
+        const ItemStack& stack = *usable_items[static_cast<std::size_t>(selected)];
+        const Item item = stack.item;
+        const ItemUseResult result = m_ItemUseRegistry.use_item(
+            *context.player, item.id, context.enemy.get());
+        if (!result.succeeded) {
+            context.message = result.message;
+            return FightActionResult::RETRY;
+        }
+        context.message = result.message;
+        return FightActionResult::TURN_CONSUMED;
+    });
 }
 
 void FightActions::register_action(char key, std::string label,
@@ -142,7 +176,7 @@ FightActionResult FightActions::execute(std::size_t index,
 }
 
 void perform_enemy_turn(FightActionContext& context) {
-    if (context.roll_percent() <= 50) {
+    if (context.roll_percent() <= 70) {
         const std::uint64_t target = context.roll_percent();
         std::uint64_t damage = 1;
         if (target <= 33) {

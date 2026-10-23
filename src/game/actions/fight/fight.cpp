@@ -40,10 +40,11 @@ ftxui::Element battle_status(const std::shared_ptr<Player>& player,
 } // namespace
 
 Fight::Fight(std::shared_ptr<Player> player, std::shared_ptr<Enemy> enemy,
-             const SpellDatabase& spell_database)
+             const SpellDatabase& spell_database,
+             const ItemUseRegistry& item_use_registry)
     : m_pEnemy(enemy),
       m_pPlayer(player),
-      m_Actions(spell_database),
+      m_Actions(spell_database, item_use_registry),
       m_ExpReward(enemy->m_RewardExp),
       m_MoneyReward(enemy->m_RewardMoney),
       m_GemsReward(enemy->m_RewardGems) {}
@@ -133,7 +134,6 @@ void Fight::loop() {
     
     if (m_pPlayer->m_Level > previous_level) {
       result += "\n\nYou reached level " + std::to_string(m_pPlayer->m_Level) + "!";
-      m_pPlayer->m_Health = m_pPlayer->m_MaxHealth; // temp
     }
 
     if (!learned_spells.empty()) {

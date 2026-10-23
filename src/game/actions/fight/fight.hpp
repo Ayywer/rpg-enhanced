@@ -16,7 +16,8 @@ namespace rpg {
 class Fight {
 public:
     Fight(std::shared_ptr<Player> player, std::shared_ptr<Enemy> enemy,
-      const SpellDatabase& spell_database);
+      const SpellDatabase& spell_database,
+      const ItemUseRegistry& item_use_registry);
 
   void loop();
 

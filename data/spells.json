@@ -1,6 +1,18 @@
 {
   "spells": [
     {
+      "id": "sunder",
+      "name": "Sunder",
+      "description": "A measured strike that weakens a sturdy opponent.",
+      "effect": "damage",
+      "mana_cost": 3,
+      "power": 15,
+      "success_chance": 80,
+      "learn_by_class": {
+        "Fighter": 2
+      }
+    },
+    {
       "id": "mend",
       "name": "Mend",
       "description": "Restore health with a focused healing spell.",
@@ -9,7 +21,8 @@
       "power": 15,
       "success_chance": 75,
       "learn_by_class": {
-        "Magician": 1
+        "Magician": 1,
+        "Fighter": 3
       }
     },
     {
@@ -21,7 +34,7 @@
       "power": 35,
       "success_chance": 65,
       "learn_by_class": {
-        "Magician": 5 
+        "Magician": 5
       }
     },
     {
@@ -34,7 +47,7 @@
       "success_chance": 85,
       "learn_by_class": {
         "Magician": 1,
-        "Fighter": 5
+        "Fighter": 4
       }
     },
     {
@@ -45,6 +58,31 @@
       "mana_cost": 15,
       "power": 35,
       "success_chance": 40,
+      "learn_by_class": {
+        "Magician": 5
+      }
+    },
+    {
+      "id": "fire_scroll",
+      "name": "Flame Burst",
+      "description": "Release a focused blast of fire.",
+      "effect": "damage",
+      "mana_cost": 8,
+      "power": 24,
+      "success_chance": 75,
+      "learn_by_class": {
+        "Magician": 2,
+        "Fighter": 6
+      }
+    },
+    {
+      "id": "fire_ball",
+      "name": "Fireball",
+      "description": "Summon fireball and push it into your opponent",
+      "effect": "damage",
+      "mana_cost": 35,
+      "power": 35,
+      "success_chance": 70,
       "learn_by_class": {
         "Magician": 5
       }

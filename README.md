@@ -7,7 +7,7 @@ I started this project as a way to learn c++, but I realised I won't be using th
 
 Project structure is a mess and it's spaghetti code all over the place, be aware of that.
 
-I used ([FTXUI](https://github.com/ArthurSonzogni/FTXUI)) to make my console game look pleasing, with additional controls over UI.
+I used [FTXUI](https://github.com/ArthurSonzogni/FTXUI) to make my console game look pleasing, with additional controls over UI.
 
 # Gameplay
 Choose your class, fight with monsters on different arenas, gain experience and level up.

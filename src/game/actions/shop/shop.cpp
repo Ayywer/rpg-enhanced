@@ -3,7 +3,6 @@
 
 #include "../../console.hpp"
 
-#include <charconv>
 #include <string>
 
 namespace rpg {
@@ -18,42 +17,42 @@ void Shop::loop() {
                 ftxui::color(ftxui::Color::RedLight),
         }),
         ftxui::Color::RGB(232, 194, 111));
-    const int selected = ui::choose_option(
-        "Armor smith", {"Head", "Chest", "Boots", "Return to the road"},
-        wallet);
-    if (selected < 0 || selected == 3) {
+    std::vector<std::string> choices;
+    std::vector<const ItemDefinition*> stock;
+    stock.reserve(m_ItemDatabase.items().size() +
+                  m_ItemDatabase.equipment().size());
+    for (const ItemDefinition& definition : m_ItemDatabase.items()) {
+      stock.push_back(&definition);
+      choices.push_back("Item  /  " + definition.item.name + "  /  " +
+                        std::to_string(definition.price) + " gold");
+    }
+    for (const EquipmentDefinition& definition : m_ItemDatabase.equipment()) {
+      stock.push_back(&definition);
+      choices.push_back("Equipment  /  " + definition.item.name + "  /  " +
+                        std::to_string(definition.price) + " gold");
+    }
+    choices.push_back("Return to the road");
+    const int selected = ui::choose_option("Smith and provisions", choices, wallet);
+    if (selected < 0 || selected >= static_cast<int>(stock.size())) {
       return;
     }
-
-    const BodyPart body_part = selected == 0   ? BodyPart::HEAD
-                               : selected == 1 ? BodyPart::CHEST
-                                               : BodyPart::BOOTS;
-    const std::string value = ui::input_text(
-        "Armor reinforcement",
-        "Protection value (paid in gold)");
-    std::uint64_t armor_strength = 0;
-    const char* begin = value.data();
-    const char* end = begin + value.size();
-    const auto [parsed_end, error] = std::from_chars(begin, end, armor_strength);
-    if (value.empty() || error != std::errc{} || parsed_end != end) {
-      ui::notify("Invalid amount", "Enter a whole number for the protection value.", ftxui::Color::RGB(232, 166, 76));
-      continue;
-    }
-
-    if (armor_strength > m_pPlayer->m_Money) {
-      ui::notify("Not enough gold", "You need " +
-                                      std::to_string(armor_strength) +
+    const ItemDefinition& definition = *stock[static_cast<std::size_t>(selected)];
+    const std::uint64_t price = definition.price;
+    const Item& item = definition.item;
+    if (price > m_pPlayer->m_Money) {
+      ui::notify("Not enough gold", "You need " + std::to_string(price) +
                                       " gold, but have " +
                                       std::to_string(m_pPlayer->m_Money) + ".",
                  ftxui::Color::RGB(224, 95, 91));
       continue;
     }
-
-    m_pPlayer->m_Equipment[body_part] = Equipment(armor_strength);
-    m_pPlayer->m_Money -= armor_strength;
-    ui::notify("Armor improved", "Protection " +
-                                      std::to_string(armor_strength) +
-                                      " added. Remaining gold: " +
+    if (m_pPlayer->add_item(item) == 0) {
+      ui::notify("Inventory full", "That item stack is already at its limit.",
+                 ftxui::Color::RGB(224, 95, 91));
+      continue;
+    }
+    m_pPlayer->m_Money -= price;
+    ui::notify("Purchased", item.name + " added to inventory. Remaining gold: " +
                                       std::to_string(m_pPlayer->m_Money) + ".");
   }
 }

@@ -36,9 +36,11 @@ void Game::loop() {
 
   bool continue_adventure = true;
   const auto show_statistics = [this] {
-    const auto protection = [this](BodyPart part) {
-      const auto equipment = m_pPlayer->m_Equipment.find(part);
-      return equipment == m_pPlayer->m_Equipment.end() ? std::uint64_t{0} : equipment->second.m_Protection;
+    const auto equipment_name = [this](EquipmentSlot slot) {
+      const auto equipment = m_pPlayer->m_Equipment.find(slot);
+      return equipment == m_pPlayer->m_Equipment.end()
+                 ? std::string("Empty")
+                 : equipment->second.m_Name;
     };
 
     std::string known_spells = "None";
@@ -96,9 +98,13 @@ void Game::loop() {
 
             section("EQUIPMENT & WEALTH:"),
             section(""),
-            stat("HEAD:", std::to_string(protection(BodyPart::HEAD))),
-            stat("CHEST:", std::to_string(protection(BodyPart::CHEST))),
-            stat("BOOTS:", std::to_string(protection(BodyPart::BOOTS))),
+            stat("HELMET:", equipment_name(EquipmentSlot::HELMET)),
+            stat("CHESTPLATE:", equipment_name(EquipmentSlot::CHESTPLATE)),
+            stat("BOOTS:", equipment_name(EquipmentSlot::BOOTS)),
+            stat("NECKLACE:", equipment_name(EquipmentSlot::NECKLACE)),
+            stat("RING:", equipment_name(EquipmentSlot::RING)),
+            stat("WEAPON:", equipment_name(EquipmentSlot::WEAPON)),
+            stat("SHIELD:", equipment_name(EquipmentSlot::SHIELD)),
 
             ftxui::separator(),
 
@@ -109,18 +115,64 @@ void Game::loop() {
         ftxui::Color::RGB(91, 205, 183));
     ui::choose_option("Player statistics", {"Return to the road"}, stats);
   };
+  const auto show_inventory = [this] {
+    while (true) {
+      std::vector<std::string> choices;
+      choices.reserve(m_pPlayer->m_Inventory.size() + 1);
+      for (const ItemStack& stack : m_pPlayer->m_Inventory) {
+        const std::string type =
+          stack.item.type == ItemType::POTION ? "Potions"
+          : stack.item.type == ItemType::SCROLL ? "Scrolls"
+            : stack.item.type == ItemType::RELIC ? "Relics"
+                               : "Equipment";
+          const std::string active =
+            stack.item.type == ItemType::RELIC &&
+                m_pPlayer->has_active_relic(stack.item.id)
+              ? "  /  Active"
+              : "";
+        choices.push_back(stack.item.name + "  x" +
+                    std::to_string(stack.quantity) + "  /  " + type +
+                    active);
+      }
+      choices.push_back("Return to the road");
+      const int selected = ui::choose_option("Inventory", choices);
+      if (selected < 0 ||
+          selected >= static_cast<int>(m_pPlayer->m_Inventory.size())) {
+        return;
+      }
+      const Item item = m_pPlayer->m_Inventory[static_cast<std::size_t>(selected)].item;
+      if (item.type == ItemType::EQUIPMENT) {
+        if (m_pPlayer->equip_item(item.id)) {
+          ui::notify("Equipment changed", item.name + " equipped.",
+                     ftxui::Color::RGB(91, 205, 183));
+        } else {
+          ui::notify("Cannot equip", "That item has no valid equipment slot.",
+                     ftxui::Color::RGB(224, 95, 91));
+        }
+      } else {
+        const ItemUseResult result =
+            m_ItemUseRegistry.use_item(*m_pPlayer, item.id);
+        ui::notify(result.succeeded ? "Item used" : "Cannot use item",
+                   result.message,
+                   result.succeeded ? ftxui::Color::RGB(91, 205, 183)
+                                    : ftxui::Color::RGB(232, 166, 76));
+      }
+    }
+  };
 
   const std::vector<GameAction> actions{
       {'a', "Enter the arena", [] { return true; },
        [this] {
-         Fight fight(m_pPlayer, m_EnemyGenerator.generate(m_pPlayer->m_Level), m_SpellDatabase);
+         Fight fight(m_pPlayer, m_EnemyGenerator.generate(m_pPlayer->m_Level),
+                     m_SpellDatabase, m_ItemUseRegistry);
          fight.loop();
        }},
       {'s', "Visit the armor smith", [] { return true; },
        [this] {
-         Shop shop(m_pPlayer);
+         Shop shop(m_pPlayer, m_ItemDatabase);
          shop.loop();
        }},
+      {'i', "Open inventory", [] { return true; }, show_inventory},
       {'v', "View player statistics", [] { return true; }, show_statistics},
       {'q', "Leave the adventure", [] { return true; },
        [&continue_adventure] { continue_adventure = false; }},

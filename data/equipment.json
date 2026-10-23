@@ -1,0 +1,81 @@
+{
+    "equipment": [
+        {
+            "id": "iron-helmet",
+            "name": "Iron Helmet",
+            "type": "equipment",
+            "effect": "none",
+            "use_function": "none",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 12,
+            "equipment": {"slot": "helmet", "protection": 2, "strength": 0}
+        },
+        {
+            "id": "iron-chestplate",
+            "name": "Iron Chestplate",
+            "type": "equipment",
+            "effect": "none",
+            "use_function": "none",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 15,
+            "equipment": {"slot": "chestplate", "protection": 3, "strength": 0}
+        },
+        {
+            "id": "iron-boots",
+            "name": "Iron Boots",
+            "type": "equipment",
+            "effect": "none",
+            "use_function": "none",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 10,
+            "equipment": {"slot": "boots", "protection": 2, "strength": 0}
+        },
+        {
+            "id": "silver-necklace",
+            "name": "Silver Necklace",
+            "type": "equipment",
+            "effect": "none",
+            "use_function": "none",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 10,
+            "equipment": {"slot": "necklace", "protection": 1, "strength": 0}
+        },
+        {
+            "id": "ruby-ring",
+            "name": "Ruby Ring",
+            "type": "equipment",
+            "effect": "none",
+            "use_function": "none",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 11,
+            "equipment": {"slot": "ring", "protection": 1, "strength": 1}
+        },
+        {
+            "id": "iron-sword",
+            "name": "Iron Sword",
+            "type": "equipment",
+            "effect": "none",
+            "use_function": "none",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 16,
+            "equipment": {"slot": "weapon", "protection": 0, "strength": 3}
+        },
+        {
+            "id": "iron-shield",
+            "name": "Iron Shield",
+            "type": "equipment",
+            "effect": "none",
+            "use_function": "none",
+            "power": 0,
+            "max_quantity": 1,
+            "price": 13,
+            "equipment": {"slot": "shield", "protection": 2, "strength": 0}
+        }
+    ]
+}
