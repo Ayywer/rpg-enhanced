@@ -32,6 +32,7 @@ ftxui::Element battle_status(const std::shared_ptr<Player>& player,
       ftxui::text(""),
       ftxui::text("STRENGTH  " + std::to_string(enemy->m_Strength)) | ftxui::color(ftxui::Color::GrayLight),
       ftxui::text("DEFENCE  " + std::to_string(enemy->m_Defense)) | ftxui::color(ftxui::Color::GrayLight),
+      ftxui::text("PRECISION  " + std::to_string(enemy->m_Precision) + "%") | ftxui::color(ftxui::Color::GrayLight),
     }),
     ftxui::Color::RGB(224, 95, 91));
   return ftxui::hbox({player_panel, enemy_panel});

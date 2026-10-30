@@ -178,8 +178,16 @@ SpellResult SpellDatabase::cast(Player& player, Enemy& enemy,
     result.heal = std::min(spell.power, max_heal);
     player.m_Health += static_cast<std::int64_t>(result.heal);
   } else if (enemy.m_Health > 0) {
-    result.damage = std::min(
-        spell.power, static_cast<std::uint64_t>(enemy.m_Health));
+    const std::uint64_t max_damage =
+      static_cast<std::uint64_t>(enemy.m_Health);
+    const std::uint64_t damage_multiplier = player.m_Intelligence;
+    const std::uint64_t scaled_power =
+      damage_multiplier != 0 &&
+          spell.power > std::numeric_limits<std::uint64_t>::max() /
+                    damage_multiplier
+        ? max_damage
+        : std::min(spell.power * damage_multiplier / 10, max_damage);
+    result.damage = scaled_power;
     enemy.m_Health -= static_cast<std::int64_t>(result.damage);
   }
   return result;

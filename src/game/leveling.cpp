@@ -1,5 +1,6 @@
 #include "leveling.hpp"
 
+#include <algorithm>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -45,7 +46,11 @@ void apply_level_progress(std::shared_ptr<Player> player, std::uint64_t exp_gain
     const std::int64_t health = increase_health(player->m_Health);
     const std::uint64_t max_health = increase_stat(player->m_MaxHealth, "max health");
     const std::uint64_t strength = increase_stat(player->m_Strength, "strength");
+    const std::uint64_t intelligence =
+      increase_stat(player->m_Intelligence, "intelligence");
     const std::uint64_t defense = increase_stat(player->m_Defense, "defense");
+    const std::uint64_t precision =
+      std::min<std::uint64_t>(100, increase_stat(player->m_Precision, "precision"));
     const std::uint64_t mana = increase_stat(player->m_Mana, "mana");
     const std::uint64_t max_mana = increase_stat(player->m_MaxMana, "max mana");
 
@@ -55,7 +60,9 @@ void apply_level_progress(std::shared_ptr<Player> player, std::uint64_t exp_gain
     player->m_Health = health;
     player->m_MaxHealth = max_health;
     player->m_Strength = strength;
+    player->m_Intelligence = intelligence;
     player->m_Defense = defense;
+    player->m_Precision = precision;
     player->m_Mana = mana;
     player->m_MaxMana = max_mana;
   }

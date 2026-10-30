@@ -10,7 +10,9 @@ std::shared_ptr<rpg::Player> make_player() {
   player->m_Health = 40;
   player->m_MaxHealth = 100;
   player->m_Strength = 10;
+  player->m_Intelligence = 10;
   player->m_Defense = 5;
+  player->m_Precision = 75;
   player->m_Mana = 4;
   player->m_MaxMana = 20;
   player->m_ManaRegenerationMultiplier = 2;
@@ -35,6 +37,8 @@ int main() {
   if (player->m_Level != 2 || player->m_Exp != 0 || player->m_MaxExp != 15 ||
       player->m_Health != 48 || player->m_MaxHealth != 120 ||
       player->m_Strength != 12 || player->m_Defense != 6 ||
+      player->m_Intelligence != 12 ||
+      player->m_Precision != 90 ||
       player->m_Mana != 4 || player->m_MaxMana != 24 ||
       player->m_ManaRegenerationMultiplier != 2) {
     std::cerr << "Stats should increase by 20 percent after one level-up\n";
@@ -46,6 +50,8 @@ int main() {
   if (player->m_Level != 3 || player->m_Exp != 5 || player->m_MaxExp != 22 ||
       player->m_Health != 57 || player->m_MaxHealth != 144 ||
       player->m_Strength != 14 || player->m_Defense != 7 ||
+      player->m_Intelligence != 14 ||
+      player->m_Precision != 100 ||
       player->m_Mana != 4 || player->m_MaxMana != 28 ||
       player->m_ManaRegenerationMultiplier != 2) {
     std::cerr << "Stats should grow moderately across multiple levels\n";

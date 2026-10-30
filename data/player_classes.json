@@ -6,7 +6,9 @@
       "stats": {
         "health": 100,
         "strength": 10,
+        "intelligence": 5,
         "defense": 5,
+        "precision": 95,
         "mana": 0,
         "max_mana": 5,
         "mana_regeneration": 1,
@@ -23,7 +25,9 @@
       "stats": {
         "health": 50,
         "strength": 5,
+        "intelligence": 10,
         "defense": 1,
+        "precision": 85,
         "mana": 0,
         "max_mana": 25,
         "mana_regeneration": 2,

@@ -93,7 +93,9 @@ PlayerClassGenerator::PlayerClassGenerator(const std::string& database_path) {
         {
             read_unsigned(stats, "health", stats_context),
             read_unsigned(stats, "strength", stats_context),
+            read_unsigned(stats, "intelligence", stats_context),
             read_unsigned(stats, "defense", stats_context),
+            read_unsigned(stats, "precision", stats_context),
             read_unsigned(stats, "mana", stats_context),
             read_unsigned(stats, "max_mana", stats_context),
             read_unsigned(stats, "mana_regeneration", stats_context),
@@ -105,6 +107,7 @@ PlayerClassGenerator::PlayerClassGenerator(const std::string& database_path) {
         },
     };
     if (definition.stats.health == 0 || definition.stats.max_experience == 0 ||
+      definition.stats.precision > 100 ||
         definition.stats.health > static_cast<std::uint64_t>(
                                       std::numeric_limits<std::int64_t>::max())) {
       throw std::runtime_error("Invalid health or max_experience in " + context);
@@ -135,7 +138,9 @@ std::shared_ptr<Player> PlayerClassGenerator::create(char key) const {
     player->m_Health = static_cast<std::int64_t>(definition.stats.health);
     player->m_MaxHealth = definition.stats.health;
     player->m_Strength = definition.stats.strength;
+    player->m_Intelligence = definition.stats.intelligence;
     player->m_Defense = definition.stats.defense;
+    player->m_Precision = definition.stats.precision;
     player->m_MaxMana = definition.stats.max_mana;
     player->m_Mana = player->m_MaxMana;
     player->m_ManaRegenerationMultiplier = definition.stats.mana_regeneration;

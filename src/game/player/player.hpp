@@ -137,6 +137,8 @@ public:
   std::uint64_t m_Defense;
 
   std::uint64_t m_Strength;
+  std::uint64_t m_Intelligence = 1;
+  std::uint64_t m_Precision = 0;
   std::uint64_t m_Mana = 0;
   std::uint64_t m_MaxMana = 0;
   std::uint64_t m_ManaRegenerationMultiplier = 1;

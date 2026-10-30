@@ -25,6 +25,7 @@ public:
   std::uint64_t m_Defense;
   
   std::uint64_t m_Strength;
+  std::uint64_t m_Precision = 0;
   std::uint64_t m_Mana = 0;
   
   std::uint64_t m_Level = 1;

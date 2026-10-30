@@ -25,7 +25,9 @@ private:
   struct Stats {
     std::uint64_t health;
     std::uint64_t strength;
+    std::uint64_t intelligence;
     std::uint64_t defense;
+    std::uint64_t precision;
     std::uint64_t mana;
     std::uint64_t max_mana;
     std::uint64_t mana_regeneration;

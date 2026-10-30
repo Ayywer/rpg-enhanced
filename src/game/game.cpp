@@ -92,6 +92,8 @@ void Game::loop() {
             section("STATISTIC"),
             section(""),
             stat("STRENGTH:", std::to_string(m_pPlayer->m_Strength)),
+            stat("INTELLIGENCE:", std::to_string(m_pPlayer->m_Intelligence)),
+            stat("PRECISION:", std::to_string(m_pPlayer->m_Precision) + "%"),
             stat("MANA REGENERATION:", std::to_string(m_pPlayer->m_ManaRegenerationMultiplier) + "x"),
 
             ftxui::separator(),

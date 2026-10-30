@@ -14,6 +14,11 @@ struct AttackChoice {
     std::uint64_t damage_multiplier;
 };
 
+std::uint64_t precision_scaled_chance(std::uint64_t base_chance,
+                                      std::uint64_t precision) {
+    return base_chance * precision / 100;
+}
+
 std::optional<AttackChoice> choose_attack() {
     const int choice = ui::choose_option(
         "Choose a target",
@@ -51,7 +56,9 @@ FightActions::FightActions(const SpellDatabase& spell_database,
             context.message = "You returned to the action menu.";
             return FightActionResult::RETRY;
         }
-        if (context.roll_percent() <= choice->hit_chance) {
+        const std::uint64_t hit_chance = precision_scaled_chance(
+            choice->hit_chance, context.player->m_Precision);
+        if (context.roll_percent() <= hit_chance) {
             const std::uint64_t damage = perform_attack(
                     context.player, context.enemy, choice->damage_multiplier,
                     choice->body_part);
@@ -158,7 +165,11 @@ FightActionResult FightActions::execute(std::size_t index,
         return FightActionResult::RETRY;
     }
 
-    const bool succeeds = context.roll_percent() <= spell.success_chance;
+    const std::uint64_t success_chance = precision_scaled_chance(
+        spell.success_chance, context.player->m_Precision);
+    const bool succeeds = context.roll_percent() <= success_chance;
+    const std::uint64_t enemy_health_before = static_cast<std::uint64_t>(
+        std::max<std::int64_t>(0, context.enemy->m_Health));
     const SpellResult result = m_SpellDatabase.cast(
         *context.player, *context.enemy, spell, succeeds);
     if (!result.succeeded) {
@@ -171,12 +182,19 @@ FightActionResult FightActions::execute(std::size_t index,
         context.message = spell.name + " dealt " +
                           std::to_string(result.damage) + " damage and spent " +
                           std::to_string(result.mana_spent) + " mana.";
+        if (result.damage > 0 && result.damage == enemy_health_before) {
+            context.message += " The enemy had " +
+                               std::to_string(enemy_health_before) +
+                               " health remaining.";
+        }
     }
     return FightActionResult::TURN_CONSUMED;
 }
 
 void perform_enemy_turn(FightActionContext& context) {
-    if (context.roll_percent() <= 70) {
+    const std::uint64_t hit_chance =
+        precision_scaled_chance(70, context.enemy->m_Precision);
+    if (context.roll_percent() <= hit_chance) {
         const std::uint64_t target = context.roll_percent();
         std::uint64_t damage = 1;
         if (target <= 33) {

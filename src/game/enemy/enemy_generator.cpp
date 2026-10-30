@@ -59,6 +59,16 @@ std::uint64_t scale_stat(std::uint64_t base, std::uint64_t per_level,
   return base + per_level * levels_above_one;
 }
 
+std::uint64_t scale_precision(std::uint64_t base, std::uint64_t per_level,
+                              std::uint64_t level) {
+  const std::uint64_t remaining = 100 - base;
+  const std::uint64_t levels_above_one = level - 1;
+  if (per_level == 0 || levels_above_one <= remaining / per_level) {
+    return base + per_level * levels_above_one;
+  }
+  return 100;
+}
+
 } // namespace
 
 EnemyGenerator::EnemyGenerator() : EnemyGenerator(RPG_ENEMY_DATABASE_PATH) {}
@@ -73,6 +83,7 @@ EnemyGenerator::EnemyGenerator(const std::string &database_path)
         read_unsigned(object, "health", context),
         read_unsigned(object, "strength", context),
         read_unsigned(object, "defense", context),
+        read_unsigned(object, "precision", context),
         read_unsigned(object, "experience", context),
         read_unsigned(object, "money", context),
         read_unsigned(object, "gems", context),
@@ -109,7 +120,8 @@ EnemyGenerator::EnemyGenerator(const std::string &database_path)
                    context + ".per_level"),
     };
     if (definition.name.empty() || definition.weight == 0 ||
-        definition.stats.health == 0) {
+      definition.stats.health == 0 || definition.stats.precision > 100 ||
+      definition.per_level.precision > 100) {
       throw std::runtime_error(
           "Enemy name, weight, and health must be positive in " + context);
     }
@@ -159,6 +171,8 @@ std::shared_ptr<Enemy> EnemyGenerator::generate(std::uint64_t level) {
   enemy->m_Defense =
       scale_stat(selected->stats.defense, selected->per_level.defense,
                  enemy_level, "defense");
+    enemy->m_Precision = scale_precision(
+      selected->stats.precision, selected->per_level.precision, enemy_level);
   enemy->m_RewardExp =
       scale_stat(selected->stats.experience, selected->per_level.experience,
                  enemy_level, "experience");

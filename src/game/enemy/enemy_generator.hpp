@@ -21,6 +21,7 @@ private:
     std::uint64_t health;
     std::uint64_t strength;
     std::uint64_t defense;
+    std::uint64_t precision;
     std::uint64_t experience;
     std::uint64_t money;
     std::uint64_t gems;

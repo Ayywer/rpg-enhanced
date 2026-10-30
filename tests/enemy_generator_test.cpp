@@ -20,15 +20,18 @@ int main() {
     bool stats_match = false;
     if (enemy->m_Name == "Goblin") {
       stats_match = enemy->m_Health == 58 && enemy->m_Strength == 6 &&
-                    enemy->m_Defense == 2 && enemy->m_RewardExp == 9 &&
+                    enemy->m_Defense == 2 && enemy->m_Precision == 62 &&
+                    enemy->m_RewardExp == 9 &&
                     enemy->m_RewardMoney == 9;
     } else if (enemy->m_Name == "Orc") {
       stats_match = enemy->m_Health == 130 && enemy->m_Strength == 12 &&
-                    enemy->m_Defense == 6 && enemy->m_RewardExp == 26 &&
+                    enemy->m_Defense == 6 && enemy->m_Precision == 72 &&
+                    enemy->m_RewardExp == 26 &&
                     enemy->m_RewardMoney == 20;
     } else if (enemy->m_Name == "Troll") {
       stats_match = enemy->m_Health == 250 && enemy->m_Strength == 15 &&
-                    enemy->m_Defense == 9 && enemy->m_RewardExp == 52 &&
+                    enemy->m_Defense == 9 && enemy->m_Precision == 82 &&
+                    enemy->m_RewardExp == 52 &&
                     enemy->m_RewardMoney == 40;
     }
 
