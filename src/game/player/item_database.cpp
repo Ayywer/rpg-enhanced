@@ -1,4 +1,5 @@
 #include "item_database.hpp"
+#include "item_use_registry.hpp"
 
 #include <json-c/json.h>
 
@@ -168,7 +169,9 @@ void ItemDatabase::load_items(const std::string& database_path,
       equipment_catalog
         ? definition.item.use_function != "none"
         : definition.item.use_function.empty() ||
-            definition.item.use_function == "none";
+                definition.item.use_function == "none" ||
+                !ItemUseRegistry::has_builtin_function(
+                    definition.item.use_function);
     const bool invalid_spell =
       (definition.item.effect == ItemEffect::LEARN_SPELL) !=
       !definition.item.spell_id.empty();

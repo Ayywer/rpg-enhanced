@@ -7,8 +7,9 @@
 
 namespace rpg {
 
-void register_mana_potion(ItemUseRegistry& registry) {
-  registry.register_function(
+namespace {
+[[maybe_unused]] const bool registered = [] {
+  ItemUseRegistry::register_builtin_function(
       "mana_potion", [](Player& player, Enemy*, const Item& item) {
         if (player.m_Mana >= player.m_MaxMana) {
           return ItemUseResult{false, "Mana is already full."};
@@ -19,6 +20,8 @@ void register_mana_potion(ItemUseRegistry& registry) {
         return ItemUseResult{true, item.name + " restored " +
                                        std::to_string(restored) + " mana."};
       });
-}
+      return true;
+    }();
+    } // namespace
 
 } // namespace rpg

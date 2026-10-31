@@ -8,8 +8,9 @@
 
 namespace rpg {
 
-void register_healing_potion(ItemUseRegistry& registry) {
-  registry.register_function(
+namespace {
+[[maybe_unused]] const bool registered = [] {
+  ItemUseRegistry::register_builtin_function(
       "healing_potion", [](Player& player, Enemy*, const Item& item) {
         if (player.m_Health >= static_cast<std::int64_t>(player.m_MaxHealth)) {
           return ItemUseResult{false, "Health is already full."};
@@ -22,6 +23,8 @@ void register_healing_potion(ItemUseRegistry& registry) {
         return ItemUseResult{true, item.name + " restored " +
                                        std::to_string(restored) + " health."};
       });
-}
+      return true;
+    }();
+    } // namespace
 
 } // namespace rpg

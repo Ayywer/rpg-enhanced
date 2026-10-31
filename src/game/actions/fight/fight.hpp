@@ -21,8 +21,7 @@ public:
 
   void loop();
 
-  void register_action(char key, std::string label,
-                       FightActionHandler handler);
+  void register_action(std::string label, FightActionHandler handler);
 
   std::uint64_t PlayerHit(std::shared_ptr<Player> who,
                           std::shared_ptr<Enemy> whom,

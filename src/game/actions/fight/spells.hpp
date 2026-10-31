@@ -3,6 +3,7 @@
 // local
 #include "../../player/player.hpp"
 #include "../../enemy/enemy.hpp"
+#include "spell_use_registry.hpp"
 
 // std
 #include <cstdint>
@@ -12,16 +13,11 @@
 
 namespace rpg {
 
-enum class SpellEffect {
-  HEAL,
-  DAMAGE,
-};
-
 struct SpellDefinition {
   std::string id;
   std::string name;
   std::string description;
-  SpellEffect effect;
+  std::string use_function;
   std::uint64_t mana_cost;
   std::uint64_t power;
   std::uint64_t success_chance;
@@ -52,6 +48,7 @@ public:
 
 private:
   std::vector<SpellDefinition> m_Spells;
+  SpellUseRegistry m_UseRegistry;
 };
 
 } // namespace rpg

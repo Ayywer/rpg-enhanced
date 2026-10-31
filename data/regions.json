@@ -1,0 +1,64 @@
+{
+  "starting_region_id": "greenhollow",
+  "regions": [
+    {
+      "id": "greenhollow",
+      "name": "Green Hollow",
+      "description": "A quiet valley of moss, old stones, and low fog where the first roads of the realm begin.",
+      "minimum_level": 1,
+      "maximum_level": 3,
+      "locations": [
+        {"id": "herbalist", "name": "Mossway Herbalist", "type": "npc", "description": "A patient healer whose shop is hidden among the roots and herbs.", "function_id": "npc_dialogue"},
+        {"id": "moss_bane", "name": "Sunlit Bane", "type": "healing_bane", "description": "A spring-fed shrine that restores health and mana to the weary.", "function_id": "healing_bane"},
+        {"id": "moss_market", "name": "Moss Market", "type": "shop", "description": "A small roadside market selling simple supplies and tools.", "function_id": "shop"}
+      ],
+      "fighting_paths": [
+        {"id": "bramble_track", "name": "Bramble Track", "encounters": 2, "level_adjustment": 0},
+        {"id": "shrine_road", "name": "Shrine Road", "encounters": 3, "level_adjustment": 1}
+      ],
+      "exits": [
+        {"id": "ambercross_road", "name": "Road to Ambercross", "target_region_id": "ambercross"}
+      ]
+    },
+    {
+      "id": "ambercross",
+      "name": "Ambercross",
+      "description": "A wind-bent settlement of traders and caravan keepers, perched along the lower pass.",
+      "minimum_level": 3,
+      "maximum_level": 6,
+      "locations": [
+        {"id": "wayfinder", "name": "Stone Wayfinder", "type": "npc", "description": "A guide who reads old cairns and whispered winds.", "function_id": "npc_dialogue"},
+        {"id": "amber_healing", "name": "Amber Shrine", "type": "healing_bane", "description": "A warm stone basin of spring water that steadies the body.", "function_id": "healing_bane"}
+      ],
+      "fighting_paths": [
+        {"id": "wagon_lane", "name": "Wagon Lane", "encounters": 2, "level_adjustment": 1},
+        {"id": "cutting_pass", "name": "Cutting Pass", "encounters": 3, "level_adjustment": 0}
+      ],
+      "exits": [
+        {"id": "greenhollow_road", "name": "Road to Green Hollow", "target_region_id": "greenhollow"},
+        {"id": "frostpeak_route", "name": "Pass to Frostpeak", "target_region_id": "frostpeak"}
+      ]
+    },
+    {
+      "id": "frostpeak",
+      "name": "Frostpeak",
+      "description": "A bitter mountain hold where the air bites clean and the paths grow narrow and dangerous.",
+      "minimum_level": 5,
+      "maximum_level": 10,
+      "locations": [
+        {"id": "guide", "name": "Rime Guide", "type": "npc", "description": "A mountain scout who knows every ridge and loose shelf of ice.", "function_id": "npc_dialogue"},
+        {"id": "ice_bane", "name": "Frostwell", "type": "healing_bane", "description": "A natural vent of steam-warm water hidden in the stone.", "function_id": "healing_bane"}
+      ],
+      "fighting_paths": [
+        {"id": "ridge_run", "name": "Ridge Run", "encounters": 2, "level_adjustment": 2},
+        {"id": "snow_chasm", "name": "Snow Chasm", "encounters": 3, "level_adjustment": 1}
+      ],
+      "exits": [
+        {"id": "ambercross_route", "name": "Pass to Ambercross", "target_region_id": "ambercross"}
+      ],
+      "entry_conditions": [
+        {"function_id": "minimum_level", "parameters": {"level": 5}}
+      ]
+    }
+  ]
+}

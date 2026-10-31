@@ -8,7 +8,6 @@
 #include <ftxui/screen/color.hpp>
 
 #include <algorithm>
-#include <cctype>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -60,8 +59,7 @@ inline Element meter(std::string label, std::uint64_t value,
 
 inline int choose_option(const std::string &title = "",
                          const std::vector<std::string> &options = {},
-                         Element context = emptyElement(),
-                         const std::vector<char> &shortcuts = {}) {
+                         Element context = emptyElement()) {
   if (options.empty()) {
     return -1;
   }
@@ -71,38 +69,11 @@ inline int choose_option(const std::string &title = "",
   auto menu_options = MenuOption::VerticalAnimated();
   menu_options.on_enter = screen.ExitLoopClosure();
   auto menu = Menu(&options, &selected, menu_options);
-  auto menu_with_shortcuts = CatchEvent(menu, [&](Event event) {
-    if (!event.is_character()) {
-      return false;
-    }
-
-    const std::string character = event.character();
-    if (character.size() != 1) {
-      return false;
-    }
-    const char pressed = static_cast<char>(
-        std::tolower(static_cast<unsigned char>(character.front())));
-    for (std::size_t index = 0;
-         index < shortcuts.size() && index < options.size(); ++index) {
-      const char shortcut = static_cast<char>(
-          std::tolower(static_cast<unsigned char>(shortcuts[index])));
-      if (pressed == shortcut) {
-        selected = static_cast<int>(index);
-        screen.ExitLoopClosure()();
-        return true;
-      }
-    }
-    return false;
-  });
-  const std::string footer =
-      shortcuts.empty()
-          ? "UP / DOWN  Navigate     ENTER  Select"
-          : "UP / DOWN  Navigate     ENTER  Select";
-  auto renderer = Renderer(menu_with_shortcuts, [&] {
+  auto renderer = Renderer(menu, [&] {
     return page(title,
-                vbox({context, menu_with_shortcuts->Render() | borderRounded |
+                vbox({context, menu->Render() | borderRounded |
                                    color(Color::RGB(64, 113, 112))}),
-                footer);
+                "");
   });
   screen.Loop(renderer);
   return selected;
@@ -118,7 +89,7 @@ inline void notify(const std::string &title = "",
     return page(title,
                 vbox(Elements{paragraph(message) | color(Color::White),
                               continue_button->Render()}),
-                "ENTER  Continue", accent);
+                "", accent);
   });
   screen.Loop(renderer);
 }
@@ -136,7 +107,7 @@ inline std::string input_text(const std::string &title = "",
                 vbox({text(prompt) | color(Color::GrayLight),
                       input->Render() |
                           borderStyled(ROUNDED, Color::RGB(64, 113, 112))}),
-                "TYPE  Enter a value     ENTER  Confirm");
+          "");
   });
   screen.Loop(renderer);
   return value;

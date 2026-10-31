@@ -36,17 +36,14 @@ public:
   FightActions(const SpellDatabase& spell_database,
                const ItemUseRegistry& item_use_registry);
 
-  void register_action(char key, std::string label,
-                       FightActionHandler handler);
+  void register_action(std::string label, FightActionHandler handler);
   std::vector<std::string> labels(const Player& player) const;
-  std::vector<char> shortcuts() const;
   std::vector<std::string> learn_available(Player& player) const;
   FightActionResult execute(std::size_t index,
                             FightActionContext& context) const;
 
 private:
   struct Action {
-    char key;
     std::string label;
     FightActionHandler handler;
   };

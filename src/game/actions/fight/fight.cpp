@@ -50,9 +50,9 @@ Fight::Fight(std::shared_ptr<Player> player, std::shared_ptr<Enemy> enemy,
       m_MoneyReward(enemy->m_RewardMoney),
       m_GemsReward(enemy->m_RewardGems) {}
 
-void Fight::register_action(char key, std::string label,
+void Fight::register_action(std::string label,
                             FightActionHandler handler) {
-  m_Actions.register_action(key, std::move(label), std::move(handler));
+  m_Actions.register_action(std::move(label), std::move(handler));
 }
 
 std::uint64_t Fight::PlayerHit(std::shared_ptr<Player> who,
@@ -83,8 +83,7 @@ void Fight::loop() {
     if (players_turn) {
       const std::vector<std::string> actions = m_Actions.labels(*m_pPlayer);
       const int selected = ui::choose_option(
-          "Your turn", actions, battle_status(m_pPlayer, m_pEnemy),
-          m_Actions.shortcuts());
+          "Your turn", actions, battle_status(m_pPlayer, m_pEnemy));
       if (selected < 0) {
         break;
       }

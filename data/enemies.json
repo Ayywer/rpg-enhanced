@@ -3,6 +3,7 @@
     {
       "name": "Goblin",
       "weight": 60,
+      "paths": ["bramble_track", "shrine_road"],
       "stats": {
         "health": 38,
         "strength": 4,
@@ -25,6 +26,7 @@
     {
       "name": "Orc",
       "weight": 32,
+      "paths": ["wagon_lane", "shrine_road", "cutting_pass", "ridge_run"],
       "stats": {
         "health": 90,
         "strength": 8,
@@ -47,6 +49,7 @@
     {
       "name": "Troll",
       "weight": 8,
+      "paths": ["cutting_pass", "ridge_run", "snow_chasm"],
       "stats": {
         "health": 180,
         "strength": 11,

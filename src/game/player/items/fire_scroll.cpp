@@ -4,8 +4,9 @@
 
 namespace rpg {
 
-void register_fire_scroll(ItemUseRegistry &registry) {
-  registry.register_function(
+namespace {
+[[maybe_unused]] const bool registered = [] {
+  ItemUseRegistry::register_builtin_function(
       "fire_scroll", [](Player& player, Enemy*, const Item& item) {
         if (item.spell_id.empty()) {
           return ItemUseResult{false, "This scroll has no spell assigned."};
@@ -15,6 +16,8 @@ void register_fire_scroll(ItemUseRegistry &registry) {
         }
         return ItemUseResult{true, "You learned " + item.spell_id + "!"};
       });
-}
+      return true;
+    }();
+    } // namespace
 
 } // namespace rpg

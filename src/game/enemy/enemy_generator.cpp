@@ -2,10 +2,12 @@
 
 #include <json-c/json.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 namespace rpg {
@@ -112,9 +114,31 @@ EnemyGenerator::EnemyGenerator(const std::string &database_path)
       throw std::runtime_error("Expected object in " + context);
     }
 
+    json_object *paths = require_member(entry, "paths", context);
+    if (!json_object_is_type(paths, json_type_array) ||
+        json_object_array_length(paths) == 0) {
+      throw std::runtime_error("Expected non-empty 'paths' array in " + context);
+    }
+    std::vector<std::string> path_ids;
+    std::unordered_set<std::string> unique_path_ids;
+    const std::size_t path_count = json_object_array_length(paths);
+    path_ids.reserve(path_count);
+    for (std::size_t path_index = 0; path_index < path_count; ++path_index) {
+      json_object *path = json_object_array_get_idx(paths, path_index);
+      if (!json_object_is_type(path, json_type_string)) {
+        throw std::runtime_error("Expected string path ID in " + context);
+      }
+      std::string path_id = json_object_get_string(path);
+      if (path_id.empty() || !unique_path_ids.insert(path_id).second) {
+        throw std::runtime_error("Invalid or duplicate path ID in " + context);
+      }
+      path_ids.push_back(std::move(path_id));
+    }
+
     Definition definition{
         read_string(entry, "name", context),
         read_unsigned(entry, "weight", context),
+        std::move(path_ids),
         read_stats(require_member(entry, "stats", context), context + ".stats"),
         read_stats(require_member(entry, "per_level", context),
                    context + ".per_level"),
@@ -129,9 +153,14 @@ EnemyGenerator::EnemyGenerator(const std::string &database_path)
   }
 }
 
-std::shared_ptr<Enemy> EnemyGenerator::generate(std::uint64_t level) {
+std::shared_ptr<Enemy> EnemyGenerator::generate(std::uint64_t level,
+                                                const std::string& path_id) {
   std::uint64_t total_weight = 0;
   for (const Definition &definition : m_Definitions) {
+    if (std::find(definition.paths.begin(), definition.paths.end(), path_id) ==
+        definition.paths.end()) {
+      continue;
+    }
     if (definition.weight >
         std::numeric_limits<std::uint64_t>::max() - total_weight) {
       throw std::overflow_error(
@@ -139,12 +168,20 @@ std::shared_ptr<Enemy> EnemyGenerator::generate(std::uint64_t level) {
     }
     total_weight += definition.weight;
   }
+  if (total_weight == 0) {
+    throw std::invalid_argument("No enemies are configured for fighting path: " +
+                                path_id);
+  }
 
   std::uniform_int_distribution<std::uint64_t> selection(1, total_weight);
   const std::uint64_t selected_weight = selection(m_RandomEngine);
   std::uint64_t cumulative_weight = 0;
   const Definition *selected = nullptr;
   for (const Definition &definition : m_Definitions) {
+    if (std::find(definition.paths.begin(), definition.paths.end(), path_id) ==
+        definition.paths.end()) {
+      continue;
+    }
     cumulative_weight += definition.weight;
     if (selected_weight <= cumulative_weight) {
       selected = &definition;

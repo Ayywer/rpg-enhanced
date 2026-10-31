@@ -1,18 +1,30 @@
 #include "item_use_registry.hpp"
 
-#include "items/item_handlers.hpp"
 #include "player.hpp"
 
+#include <stdexcept>
 #include <utility>
 
 namespace rpg {
 
-ItemUseRegistry::ItemUseRegistry() {
-  register_healing_potion(*this);
-  register_mana_potion(*this);
-  register_fire_scroll(*this);
-  register_lightning_scroll(*this);
-  register_amber_relic(*this);
+ItemUseRegistry::HandlerMap& ItemUseRegistry::builtin_handlers() {
+  static HandlerMap handlers;
+  return handlers;
+}
+
+void ItemUseRegistry::register_builtin_function(std::string function_id,
+                                                Handler handler) {
+  if (function_id.empty() || !handler) {
+    throw std::invalid_argument("Built-in item handler requires an ID and function");
+  }
+  if (!builtin_handlers().emplace(std::move(function_id), std::move(handler)).second) {
+    throw std::invalid_argument("Duplicate built-in item handler registration");
+  }
+}
+
+bool ItemUseRegistry::has_builtin_function(
+    const std::string& function_id) {
+  return builtin_handlers().find(function_id) != builtin_handlers().end();
 }
 
 void ItemUseRegistry::register_function(std::string function_id,
@@ -21,6 +33,11 @@ void ItemUseRegistry::register_function(std::string function_id,
     return;
   }
   m_Handlers.insert_or_assign(std::move(function_id), std::move(handler));
+}
+
+bool ItemUseRegistry::contains(const std::string& function_id) const {
+  return m_Handlers.find(function_id) != m_Handlers.end() ||
+         has_builtin_function(function_id);
 }
 
 ItemUseResult ItemUseRegistry::use_item(Player& player,
@@ -33,11 +50,20 @@ ItemUseResult ItemUseRegistry::use_item(Player& player,
         (item.type == ItemType::RELIC && enemy != nullptr)) {
       continue;
     }
-    const auto handler = m_Handlers.find(item.use_function);
-    if (handler == m_Handlers.end()) {
+    const Handler* handler = nullptr;
+    const auto custom_handler = m_Handlers.find(item.use_function);
+    if (custom_handler != m_Handlers.end()) {
+      handler = &custom_handler->second;
+    } else {
+      const auto builtin_handler = builtin_handlers().find(item.use_function);
+      if (builtin_handler != builtin_handlers().end()) {
+        handler = &builtin_handler->second;
+      }
+    }
+    if (handler == nullptr) {
       return {false, "No handler is registered for this item's function."};
     }
-    ItemUseResult result = handler->second(player, enemy, item);
+    ItemUseResult result = (*handler)(player, enemy, item);
     if (!result.succeeded) {
       return result;
     }

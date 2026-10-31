@@ -5,8 +5,9 @@
 
 namespace rpg {
 
-void register_amber_relic(ItemUseRegistry& registry) {
-  registry.register_function(
+namespace {
+[[maybe_unused]] const bool registered = [] {
+  ItemUseRegistry::register_builtin_function(
       "amber_relic", [](Player& player, Enemy*, const Item& item) {
         for (std::size_t index = 0; index < player.m_ActiveRelics.size(); ++index) {
           if (player.m_ActiveRelics[index].id != item.id) {
@@ -22,6 +23,8 @@ void register_amber_relic(ItemUseRegistry& registry) {
                                  std::to_string(item.bonus_defense) +
                                  " defense.", false};
       });
-}
+      return true;
+    }();
+    } // namespace
 
 } // namespace rpg

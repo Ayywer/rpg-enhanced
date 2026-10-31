@@ -37,6 +37,9 @@ endfunction()
 
 # Collect implementation files under src/.
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
+set(REGION_DATA_SOURCES
+	src/game/regions/region_database.cpp
+	src/game/npc_dialogue.cpp)
 
 # Enable extra warnings
 enable_cxx_compiler_flag_if_supported("-Wall")
@@ -54,7 +57,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 	RPG_PLAYER_CLASS_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/player_classes.json"
 	RPG_SPELL_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/spells.json"
 	RPG_ITEM_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/items.json"
-	RPG_EQUIPMENT_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/equipment.json")
+	RPG_EQUIPMENT_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/equipment.json"
+	RPG_NPC_DIALOGUE_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/npc_dialogue.json"
+	RPG_REGION_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/regions.json")
 
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/data")
 configure_file(data/enemies.json "${CMAKE_CURRENT_BINARY_DIR}/data/enemies.json" COPYONLY)
@@ -62,6 +67,8 @@ configure_file(data/player_classes.json "${CMAKE_CURRENT_BINARY_DIR}/data/player
 configure_file(data/spells.json "${CMAKE_CURRENT_BINARY_DIR}/data/spells.json" COPYONLY)
 configure_file(data/items.json "${CMAKE_CURRENT_BINARY_DIR}/data/items.json" COPYONLY)
 configure_file(data/equipment.json "${CMAKE_CURRENT_BINARY_DIR}/data/equipment.json" COPYONLY)
+configure_file(data/npc_dialogue.json "${CMAKE_CURRENT_BINARY_DIR}/data/npc_dialogue.json" COPYONLY)
+configure_file(data/regions.json "${CMAKE_CURRENT_BINARY_DIR}/data/regions.json" COPYONLY)
 
 # Add include directories
 target_include_directories(${PROJECT_NAME} PRIVATE src)
@@ -95,6 +102,14 @@ if(BUILD_TESTING)
 	add_executable(spell_database_test
 		tests/spell_database_test.cpp
 		src/game/actions/fight/spells.cpp
+		src/game/actions/fight/spell_use_registry.cpp
+		src/game/actions/fight/spell_effects/sunder.cpp
+		src/game/actions/fight/spell_effects/mend.cpp
+		src/game/actions/fight/spell_effects/greater_mend.cpp
+		src/game/actions/fight/spell_effects/arcane_bolt.cpp
+		src/game/actions/fight/spell_effects/thunder_strike.cpp
+		src/game/actions/fight/spell_effects/fire_scroll.cpp
+		src/game/actions/fight/spell_effects/fire_ball.cpp
 		src/game/actions/fight/attack.cpp)
 	target_include_directories(spell_database_test PRIVATE src)
 	target_link_libraries(spell_database_test PRIVATE PkgConfig::JSONC)
@@ -114,7 +129,13 @@ if(BUILD_TESTING)
 	target_include_directories(inventory_test PRIVATE src)
 	add_test(NAME inventory_test COMMAND inventory_test)
 	add_executable(item_database_test tests/item_database_test.cpp
-		src/game/player/item_database.cpp)
+		src/game/player/item_database.cpp
+		src/game/player/item_use_registry.cpp
+		src/game/player/items/healing_potion.cpp
+		src/game/player/items/mana_potion.cpp
+		src/game/player/items/fire_scroll.cpp
+		src/game/player/items/lightning_scroll.cpp
+		src/game/player/items/amber_relic.cpp)
 	target_include_directories(item_database_test PRIVATE src)
 	target_link_libraries(item_database_test PRIVATE PkgConfig::JSONC)
 	target_compile_definitions(item_database_test PRIVATE
@@ -123,4 +144,18 @@ if(BUILD_TESTING)
 	target_compile_definitions(item_database_test PRIVATE
 		RPG_EQUIPMENT_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/equipment.json")
 	add_test(NAME item_database_test COMMAND item_database_test)
+	add_executable(region_test
+		tests/region_test.cpp
+		src/game/region.cpp
+		src/game/actions/fight/attack.cpp
+		src/game/regions/entry_condition_registry.cpp
+		src/game/regions/entry_conditions/minimum_level.cpp
+		src/game/regions/entry_conditions/minimum_stat.cpp
+		${REGION_DATA_SOURCES})
+	target_include_directories(region_test PRIVATE src)
+	target_link_libraries(region_test PRIVATE PkgConfig::JSONC)
+	target_compile_definitions(region_test PRIVATE
+		RPG_NPC_DIALOGUE_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/npc_dialogue.json"
+		RPG_REGION_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/regions.json")
+	add_test(NAME region_test COMMAND region_test)
 endif()

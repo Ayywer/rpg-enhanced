@@ -1,0 +1,54 @@
+{
+  "npcs": [
+    {
+      "id": "herbalist",
+      "options": [
+        {
+          "id": "herbs",
+          "label": "Ask about herbs",
+          "message": "The herbalist leans close and whispers: 'The moss trails are safer before dawn.'"
+        },
+        {
+          "id": "road",
+          "label": "Ask about the road",
+          "message": "'The old road is restless. Keep to the shrines and do not chase every omen.'"
+        },
+        {
+          "id": "blessing",
+          "label": "Receive a blessing",
+          "message": "The herbalist wraps a bright herb around your wrist and you feel steadier."
+        }
+      ]
+    },
+    {
+      "id": "wayfinder",
+      "options": [
+        {
+          "id": "route",
+          "label": "Ask for the route",
+          "message": "The wayfinder circles the stones and points toward the safer pass. 'Take the road with the weaker fog.'"
+        },
+        {
+          "id": "advice",
+          "label": "Ask for advice",
+          "message": "'If the skies turn gray, the mountain path will be better than the canyon.'"
+        }
+      ]
+    },
+    {
+      "id": "guide",
+      "options": [
+        {
+          "id": "summit",
+          "label": "Ask about the summit",
+          "message": "The guide cups a hand to the wind. 'The ridge is brutal, but the climb is honest.'"
+        },
+        {
+          "id": "safety",
+          "label": "Ask for safety advice",
+          "message": "'Rest at every spring and never fight two paths at once.'"
+        }
+      ]
+    }
+  ]
+}

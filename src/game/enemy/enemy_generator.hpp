@@ -14,7 +14,8 @@ public:
   EnemyGenerator();
   explicit EnemyGenerator(const std::string& database_path);
 
-  std::shared_ptr<Enemy> generate(std::uint64_t level);
+  std::shared_ptr<Enemy> generate(std::uint64_t level,
+                                  const std::string& path_id);
 
 private:
   struct Stats {
@@ -30,6 +31,7 @@ private:
   struct Definition {
     std::string name;
     std::uint64_t weight;
+    std::vector<std::string> paths;
     Stats stats;
     Stats per_level;
   };

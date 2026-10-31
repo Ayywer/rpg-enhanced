@@ -2,8 +2,6 @@
 
 #include <json-c/json.h>
 
-#include <algorithm>
-#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -77,15 +75,7 @@ SpellDatabase::SpellDatabase(const std::string& database_path) {
     definition.id = read_string(entry, "id", context);
     definition.name = read_string(entry, "name", context);
     definition.description = read_string(entry, "description", context);
-    const std::string effect = read_string(entry, "effect", context);
-    if (effect == "heal") {
-      definition.effect = SpellEffect::HEAL;
-    } else if (effect == "damage") {
-      definition.effect = SpellEffect::DAMAGE;
-    } else {
-      throw std::runtime_error("Unsupported spell effect '" + effect + "' in " +
-                               context);
-    }
+    definition.use_function = read_string(entry, "use_function", context);
     definition.mana_cost = read_unsigned(entry, "mana_cost", context);
     definition.power = read_unsigned(entry, "power", context);
     definition.success_chance = read_unsigned(entry, "success_chance", context);
@@ -110,7 +100,9 @@ SpellDatabase::SpellDatabase(const std::string& database_path) {
 
     if (definition.id.empty() || definition.name.empty() ||
         definition.description.empty() || definition.power == 0 ||
-        definition.success_chance > 100 || find(definition.id) != nullptr) {
+      definition.use_function.empty() ||
+      !m_UseRegistry.contains(definition.use_function) ||
+      definition.success_chance > 100 || find(definition.id) != nullptr) {
       throw std::runtime_error("Invalid or duplicate spell definition in " + context);
     }
     m_Spells.push_back(std::move(definition));
@@ -168,28 +160,17 @@ SpellResult SpellDatabase::cast(Player& player, Enemy& enemy,
   if (!succeeds) {
     return result;
   }
+  if (!m_UseRegistry.contains(spell.use_function)) {
+    return result;
+  }
 
   player.m_Mana -= spell.mana_cost;
   result.mana_spent = spell.mana_cost;
   result.succeeded = true;
-  if (spell.effect == SpellEffect::HEAL) {
-    const std::uint64_t max_heal = static_cast<std::uint64_t>(
-        std::numeric_limits<std::int64_t>::max() - player.m_Health);
-    result.heal = std::min(spell.power, max_heal);
-    player.m_Health += static_cast<std::int64_t>(result.heal);
-  } else if (enemy.m_Health > 0) {
-    const std::uint64_t max_damage =
-      static_cast<std::uint64_t>(enemy.m_Health);
-    const std::uint64_t damage_multiplier = player.m_Intelligence;
-    const std::uint64_t scaled_power =
-      damage_multiplier != 0 &&
-          spell.power > std::numeric_limits<std::uint64_t>::max() /
-                    damage_multiplier
-        ? max_damage
-        : std::min(spell.power * damage_multiplier / 10, max_damage);
-    result.damage = scaled_power;
-    enemy.m_Health -= static_cast<std::int64_t>(result.damage);
-  }
+  const SpellEffectResult effect = m_UseRegistry.execute(
+      spell.use_function, player, enemy, spell);
+  result.heal = effect.heal;
+  result.damage = effect.damage;
   return result;
 }
 

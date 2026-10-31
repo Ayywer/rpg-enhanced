@@ -50,7 +50,7 @@ FightActions::FightActions(const SpellDatabase& spell_database,
                                                      const ItemUseRegistry& item_use_registry)
         : m_SpellDatabase(spell_database),
             m_ItemUseRegistry(item_use_registry) {
-    register_action('a', "Attack", [](FightActionContext& context) {
+    register_action("Attack", [](FightActionContext& context) {
         const std::optional<AttackChoice> choice = choose_attack();
         if (!choice) {
             context.message = "You returned to the action menu.";
@@ -69,7 +69,7 @@ FightActions::FightActions(const SpellDatabase& spell_database,
         }
         return FightActionResult::TURN_CONSUMED;
     });
-    register_action('i', "Use item", [this](FightActionContext& context) {
+    register_action("Use item", [this](FightActionContext& context) {
         std::vector<const ItemStack*> usable_items;
         std::vector<std::string> choices;
         for (const ItemStack& stack : context.player->m_Inventory) {
@@ -104,16 +104,9 @@ FightActions::FightActions(const SpellDatabase& spell_database,
     });
 }
 
-void FightActions::register_action(char key, std::string label,
+void FightActions::register_action(std::string label,
                                   FightActionHandler handler) {
-    for (Action& action : m_Actions) {
-        if (action.key == key) {
-            action.label = std::move(label);
-            action.handler = std::move(handler);
-            return;
-        }
-    }
-    m_Actions.push_back({key, std::move(label), std::move(handler)});
+    m_Actions.push_back({std::move(label), std::move(handler)});
 }
 
 std::vector<std::string> FightActions::labels(const Player& player) const {
@@ -122,21 +115,12 @@ std::vector<std::string> FightActions::labels(const Player& player) const {
         m_SpellDatabase.known_spells(player);
     result.reserve(m_Actions.size() + spells.size());
     for (const Action& action : m_Actions) {
-        result.push_back("[" + std::string(1, action.key) + "]  " + action.label);
+        result.push_back(action.label);
     }
     for (const SpellDefinition* spell : spells) {
         result.push_back(spell->name + "  |  " +
                          std::to_string(spell->mana_cost) + " mana  |  " +
                          std::to_string(spell->success_chance) + "%");
-    }
-    return result;
-}
-
-std::vector<char> FightActions::shortcuts() const {
-    std::vector<char> result;
-    result.reserve(m_Actions.size());
-    for (const Action& action : m_Actions) {
-        result.push_back(action.key);
     }
     return result;
 }
@@ -174,11 +158,11 @@ FightActionResult FightActions::execute(std::size_t index,
         *context.player, *context.enemy, spell, succeeds);
     if (!result.succeeded) {
         context.message = spell.name + " failed.";
-    } else if (spell.effect == SpellEffect::HEAL) {
+        } else if (result.heal > 0) {
         context.message = spell.name + " restored " +
                           std::to_string(result.heal) + " health and spent " +
                           std::to_string(result.mana_spent) + " mana.";
-    } else {
+        } else if (result.damage > 0) {
         context.message = spell.name + " dealt " +
                           std::to_string(result.damage) + " damage and spent " +
                           std::to_string(result.mana_spent) + " mana.";
@@ -187,6 +171,9 @@ FightActionResult FightActions::execute(std::size_t index,
                                std::to_string(enemy_health_before) +
                                " health remaining.";
         }
+    } else {
+        context.message = spell.name + " took effect and spent " +
+                          std::to_string(result.mana_spent) + " mana.";
     }
     return FightActionResult::TURN_CONSUMED;
 }

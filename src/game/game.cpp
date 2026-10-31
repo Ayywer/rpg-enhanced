@@ -3,7 +3,6 @@
 
 // local
 #include "actions/fight/fight.hpp"
-#include "actions/shop/shop.hpp"
 #include "console.hpp"
 
 #include <functional>
@@ -11,13 +10,11 @@
 namespace rpg {
 void Game::setup() {
   std::vector<std::string> classes;
-  std::vector<char> class_shortcuts;
   for (const PlayerClassChoice &choice : m_PlayerClassGenerator.choices()) {
-    classes.push_back(choice.name + "  [" + choice.key + "]");
-    class_shortcuts.push_back(choice.key);
+    classes.push_back(choice.name);
   }
 
-  const int selected = ui::choose_option("Choose your class", classes, ftxui::emptyElement(), class_shortcuts);
+  const int selected = ui::choose_option("Choose your class", classes);
 
   if (selected >= 0 && selected < static_cast<int>(m_PlayerClassGenerator.choices().size())) {
     m_pPlayer = m_PlayerClassGenerator.create(m_PlayerClassGenerator.choices()[selected].key);
@@ -28,10 +25,26 @@ void Game::setup() {
 void Game::loop() {
 
   struct GameAction {
-    char shortcut;
+    std::string category;
     std::string label;
     std::function<bool()> is_available;
     std::function<void()> execute;
+  };
+
+  const auto location_label = [](const RegionLocation& location) {
+    switch (location.type) {
+      case RegionLocationType::Shop:
+        return std::string("Shop: " + location.name);
+      case RegionLocationType::Npc:
+        return std::string("NPC: " + location.name);
+      case RegionLocationType::HealingBane:
+        return std::string("Healing: " + location.name);
+    }
+    return location.name;
+  };
+
+  const auto exit_label = [](const RegionExit& exit) {
+    return std::string("Travel: " + exit.name);
   };
 
   bool continue_adventure = true;
@@ -162,25 +175,73 @@ void Game::loop() {
     }
   };
 
-  const std::vector<GameAction> actions{
-      {'a', "Enter the arena", [] { return true; },
-       [this] {
-         Fight fight(m_pPlayer, m_EnemyGenerator.generate(m_pPlayer->m_Level),
-                     m_SpellDatabase, m_ItemUseRegistry);
-         fight.loop();
-       }},
-      {'s', "Visit the armor smith", [] { return true; },
-       [this] {
-         Shop shop(m_pPlayer, m_ItemDatabase);
-         shop.loop();
-       }},
-      {'i', "Open inventory", [] { return true; }, show_inventory},
-      {'v', "View player statistics", [] { return true; }, show_statistics},
-      {'q', "Leave the adventure", [] { return true; },
-       [&continue_adventure] { continue_adventure = false; }},
+  const auto build_region_actions = [this, &location_label, &exit_label] {
+    std::vector<GameAction> actions;
+    actions.reserve(16);
+    const Region& current_region = m_RegionWorld.current_region();
+
+  for (const FightingPath& path : current_region.fighting_paths) {
+    actions.push_back({"Fighting", path.name, [] { return true; },
+                       [this, path]() {
+                         const std::uint64_t enemy_level =
+                             m_RegionWorld.encounter_level(m_pPlayer->m_Level, path);
+                         Fight fight(m_pPlayer,
+                                     m_EnemyGenerator.generate(enemy_level,
+                                                               path.id),
+                                     m_SpellDatabase, m_ItemUseRegistry);
+                         fight.loop();
+                       }});
+  }
+
+  for (const RegionLocation& location : current_region.locations) {
+    actions.push_back({"Region", location_label(location),
+                       [] { return true; },
+                       [this, location]() {
+                         m_RegionLocationRegistry.execute(
+                             location.function_id,
+                             {m_pPlayer, m_ItemDatabase}, location);
+                       }});
+  }
+
+  for (const RegionExit& exit : current_region.exits) {
+    const auto target = std::find_if(
+        m_RegionWorld.regions().begin(), m_RegionWorld.regions().end(),
+        [&exit](const Region& candidate) {
+          return candidate.id == exit.target_region_id;
+        });
+    const Region destination = *target;
+    actions.push_back({"Region", exit_label(exit) + "  /  " + destination.name,
+                       [this] { return !m_RegionWorld.current_region().exits.empty(); },
+                       [this, exit, destination]() {
+                         const RegionEntryCheckResult condition_result =
+                             m_RegionEntryConditionRegistry.check(
+                                 destination.entry_conditions, *m_pPlayer);
+                         if (!condition_result.allowed) {
+                           ui::notify("Cannot enter " + destination.name,
+                                      condition_result.message,
+                                      ftxui::Color::RGB(224, 95, 91));
+                           return;
+                         }
+                         if (m_RegionWorld.travel_to(exit.target_region_id)) {
+                           const Region& destination = m_RegionWorld.current_region();
+                           ui::notify("Arrived in " + destination.name,
+                                      destination.description + " Suggested levels: " +
+                                          std::to_string(destination.minimum_level) + "-" +
+                                          std::to_string(destination.maximum_level) + ".");
+                         }
+                       }});
+  }
+
+    return actions;
   };
 
   while (continue_adventure && m_pPlayer->m_Health > 0) {
+    std::vector<GameAction> actions = build_region_actions();
+    actions.push_back({"Player", "Open inventory", [] { return true; }, show_inventory});
+    actions.push_back({"Player", "View player statistics", [] { return true; }, show_statistics});
+    actions.push_back({"Game", "Leave the adventure", [] { return true; },
+                       [&continue_adventure] { continue_adventure = false; }});
+    const Region& region = m_RegionWorld.current_region();
     const auto player_summary = ui::panel(
         "PLAYER",
         ftxui::vbox({
@@ -199,24 +260,91 @@ void Game::loop() {
             ftxui::text("GEMS: " + std::to_string(m_pPlayer->m_Gems)) | ftxui::color(ftxui::Color::RedLight),
         }),
         ftxui::Color::RGB(91, 205, 183));
+      const auto region_summary = ui::panel(
+        "REGION  /  " + region.name,
+        ftxui::vbox({
+          ftxui::paragraph(region.description) |
+            ftxui::color(ftxui::Color::White),
+          ftxui::text("SUGGESTED LEVEL  " +
+                std::to_string(region.minimum_level) + "-" +
+                std::to_string(region.maximum_level)) |
+            ftxui::color(ftxui::Color::GrayLight),
+        }),
+        ftxui::Color::RGB(91, 205, 183));
 
-    std::vector<const GameAction *> available_actions;
-    std::vector<std::string> action_labels;
-    std::vector<char> action_shortcuts;
-
+    std::vector<std::string> categories{"Player", "Fighting", "Region", "Game"};
+    std::vector<std::vector<const GameAction *>> grouped_actions(categories.size());
     for (const GameAction &game_action : actions) {
       if (game_action.is_available()) {
-        available_actions.push_back(&game_action);
-        action_labels.push_back("[" + std::string(1, game_action.shortcut) + "]  " + game_action.label);
-        action_shortcuts.push_back(game_action.shortcut);
+        auto category_it = std::find(categories.begin(), categories.end(), game_action.category);
+        if (category_it != categories.end()) {
+          const std::size_t category_index = static_cast<std::size_t>(
+              std::distance(categories.begin(), category_it));
+          grouped_actions[category_index].push_back(&game_action);
+        }
       }
     }
 
-    const int selected = ui::choose_option("", action_labels, player_summary, action_shortcuts);
+    int selected_category = 0;
+    int selected_action = 0;
+    std::vector<std::string> action_labels;
+    const auto refresh_action_labels = [&]() {
+      action_labels.clear();
+      if (selected_category < static_cast<int>(grouped_actions.size())) {
+        for (const GameAction *game_action : grouped_actions[static_cast<std::size_t>(selected_category)]) {
+          action_labels.push_back(game_action->label);
+        }
+      }
+      if (action_labels.empty()) {
+        action_labels.push_back("No actions available");
+      }
+      if (selected_action >= static_cast<int>(action_labels.size())) {
+        selected_action = static_cast<int>(action_labels.size()) - 1;
+      }
+    };
 
-    if (selected < 0 || selected >= static_cast<int>(available_actions.size())) break;
-    
-    available_actions[selected]->execute();
+    refresh_action_labels();
+
+    auto screen = ftxui::ScreenInteractive::Fullscreen();
+    auto category_menu = ftxui::Menu(&categories, &selected_category, ftxui::MenuOption::Vertical());
+    auto action_menu = ftxui::Menu(&action_labels, &selected_action, ftxui::MenuOption::Vertical());
+    auto select_action = ftxui::CatchEvent(
+        ftxui::Container::Horizontal({category_menu, action_menu}),
+        [&](ftxui::Event event) {
+          if (event == ftxui::Event::Return) {
+            const auto &current_group = grouped_actions[static_cast<std::size_t>(selected_category)];
+            if (!current_group.empty() && selected_action >= 0 &&
+                selected_action < static_cast<int>(current_group.size())) {
+              current_group[static_cast<std::size_t>(selected_action)]->execute();
+              screen.ExitLoopClosure()();
+              return true;
+            }
+          }
+          return false;
+        });
+
+    auto renderer = ftxui::Renderer(select_action, [&] {
+      refresh_action_labels();
+      const std::string current_category =
+          selected_category >= 0 && selected_category < static_cast<int>(categories.size())
+              ? categories[static_cast<std::size_t>(selected_category)]
+              : "";
+      return ui::page(
+          "Current region: " + region.name,
+          ftxui::hbox({
+              ui::panel("Categories", category_menu->Render() | ftxui::flex),
+              ui::panel(current_category.empty() ? "Actions" : current_category,
+                        action_menu->Render() | ftxui::flex),
+              player_summary | ftxui::flex,
+          }) | ftxui::flex,
+          "");
+    });
+
+    screen.Loop(renderer);
+
+    if (!continue_adventure && m_pPlayer->m_Health <= 0) {
+      break;
+    }
   }
 }
 } // namespace rpg
