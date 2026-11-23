@@ -57,7 +57,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 	RPG_PLAYER_CLASS_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/player_classes.json"
 	RPG_SPELL_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/spells.json"
 	RPG_ITEM_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/items.json"
-	RPG_EQUIPMENT_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/equipment.json"
+	RPG_EQUIPMENT_DATABASE_DIRECTORY="${CMAKE_CURRENT_BINARY_DIR}/data"
 	RPG_NPC_DIALOGUE_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/npc_dialogue.json"
 	RPG_REGION_DATABASE_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/regions.json")
 
@@ -66,7 +66,10 @@ configure_file(data/enemies.json "${CMAKE_CURRENT_BINARY_DIR}/data/enemies.json"
 configure_file(data/player_classes.json "${CMAKE_CURRENT_BINARY_DIR}/data/player_classes.json" COPYONLY)
 configure_file(data/spells.json "${CMAKE_CURRENT_BINARY_DIR}/data/spells.json" COPYONLY)
 configure_file(data/items.json "${CMAKE_CURRENT_BINARY_DIR}/data/items.json" COPYONLY)
-configure_file(data/equipment.json "${CMAKE_CURRENT_BINARY_DIR}/data/equipment.json" COPYONLY)
+configure_file(data/armor.json "${CMAKE_CURRENT_BINARY_DIR}/data/armor.json" COPYONLY)
+configure_file(data/weapons.json "${CMAKE_CURRENT_BINARY_DIR}/data/weapons.json" COPYONLY)
+configure_file(data/shields.json "${CMAKE_CURRENT_BINARY_DIR}/data/shields.json" COPYONLY)
+configure_file(data/accessories.json "${CMAKE_CURRENT_BINARY_DIR}/data/accessories.json" COPYONLY)
 configure_file(data/npc_dialogue.json "${CMAKE_CURRENT_BINARY_DIR}/data/npc_dialogue.json" COPYONLY)
 configure_file(data/regions.json "${CMAKE_CURRENT_BINARY_DIR}/data/regions.json" COPYONLY)
 
@@ -78,6 +81,9 @@ if(BUILD_TESTING)
 	add_executable(enemy_generator_test
 		tests/enemy_generator_test.cpp
 		src/game/enemy/enemy_generator.cpp
+		src/game/player/passive_ability_registry.cpp
+		src/game/player/passive_abilities/target_below_health.cpp
+		src/game/player/passive_abilities/low_health_guard.cpp
 		src/game/actions/fight/attack.cpp)
 	target_include_directories(enemy_generator_test PRIVATE src)
 	target_link_libraries(enemy_generator_test PRIVATE PkgConfig::JSONC)
@@ -87,6 +93,9 @@ if(BUILD_TESTING)
 	add_executable(player_class_generator_test
 		tests/player_class_generator_test.cpp
 		src/game/player/player_class_generator.cpp
+		src/game/player/passive_ability_registry.cpp
+		src/game/player/passive_abilities/target_below_health.cpp
+		src/game/player/passive_abilities/low_health_guard.cpp
 		src/game/actions/fight/attack.cpp)
 	target_include_directories(player_class_generator_test PRIVATE src)
 	target_link_libraries(player_class_generator_test PRIVATE PkgConfig::JSONC)
@@ -96,6 +105,9 @@ if(BUILD_TESTING)
 	add_executable(leveling_test
 		tests/leveling_test.cpp
 		src/game/leveling.cpp
+		src/game/player/passive_ability_registry.cpp
+		src/game/player/passive_abilities/target_below_health.cpp
+		src/game/player/passive_abilities/low_health_guard.cpp
 		src/game/actions/fight/attack.cpp)
 	target_include_directories(leveling_test PRIVATE src)
 	add_test(NAME leveling_test COMMAND leveling_test)
@@ -110,6 +122,9 @@ if(BUILD_TESTING)
 		src/game/actions/fight/spell_effects/thunder_strike.cpp
 		src/game/actions/fight/spell_effects/fire_scroll.cpp
 		src/game/actions/fight/spell_effects/fire_ball.cpp
+		src/game/player/passive_ability_registry.cpp
+		src/game/player/passive_abilities/target_below_health.cpp
+		src/game/player/passive_abilities/low_health_guard.cpp
 		src/game/actions/fight/attack.cpp)
 	target_include_directories(spell_database_test PRIVATE src)
 	target_link_libraries(spell_database_test PRIVATE PkgConfig::JSONC)
@@ -125,6 +140,9 @@ if(BUILD_TESTING)
 		src/game/player/items/fire_scroll.cpp
 		src/game/player/items/lightning_scroll.cpp
 		src/game/player/items/amber_relic.cpp
+		src/game/player/passive_ability_registry.cpp
+		src/game/player/passive_abilities/target_below_health.cpp
+		src/game/player/passive_abilities/low_health_guard.cpp
 		src/game/actions/fight/attack.cpp)
 	target_include_directories(inventory_test PRIVATE src)
 	add_test(NAME inventory_test COMMAND inventory_test)
@@ -135,18 +153,32 @@ if(BUILD_TESTING)
 		src/game/player/items/mana_potion.cpp
 		src/game/player/items/fire_scroll.cpp
 		src/game/player/items/lightning_scroll.cpp
-		src/game/player/items/amber_relic.cpp)
+		src/game/player/items/amber_relic.cpp
+		src/game/player/passive_ability_registry.cpp
+		src/game/player/passive_abilities/target_below_health.cpp
+		src/game/player/passive_abilities/low_health_guard.cpp)
 	target_include_directories(item_database_test PRIVATE src)
 	target_link_libraries(item_database_test PRIVATE PkgConfig::JSONC)
 	target_compile_definitions(item_database_test PRIVATE
 		RPG_ITEM_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/items.json")
-	# Item catalog test also validates equipment definitions in their own file.
+	# Item catalog test loads equipment definitions from their category files.
 	target_compile_definitions(item_database_test PRIVATE
-		RPG_EQUIPMENT_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/equipment.json")
+		RPG_EQUIPMENT_DATABASE_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}/data")
 	add_test(NAME item_database_test COMMAND item_database_test)
+	add_executable(passive_ability_test
+		tests/passive_ability_test.cpp
+		src/game/player/passive_ability_registry.cpp
+		src/game/player/passive_abilities/target_below_health.cpp
+		src/game/player/passive_abilities/low_health_guard.cpp
+		src/game/actions/fight/attack.cpp)
+	target_include_directories(passive_ability_test PRIVATE src)
+	add_test(NAME passive_ability_test COMMAND passive_ability_test)
 	add_executable(region_test
 		tests/region_test.cpp
 		src/game/region.cpp
+		src/game/player/passive_ability_registry.cpp
+		src/game/player/passive_abilities/target_below_health.cpp
+		src/game/player/passive_abilities/low_health_guard.cpp
 		src/game/actions/fight/attack.cpp
 		src/game/regions/entry_condition_registry.cpp
 		src/game/regions/entry_conditions/minimum_level.cpp
@@ -158,4 +190,14 @@ if(BUILD_TESTING)
 		RPG_NPC_DIALOGUE_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/npc_dialogue.json"
 		RPG_REGION_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/regions.json")
 	add_test(NAME region_test COMMAND region_test)
+	add_executable(place_test
+		tests/place_test.cpp
+		src/game/region.cpp
+		${REGION_DATA_SOURCES})
+	target_include_directories(place_test PRIVATE src)
+	target_link_libraries(place_test PRIVATE PkgConfig::JSONC)
+	target_compile_definitions(place_test PRIVATE
+		RPG_NPC_DIALOGUE_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/npc_dialogue.json"
+		RPG_REGION_DATABASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/regions.json")
+	add_test(NAME place_test COMMAND place_test)
 endif()

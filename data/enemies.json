@@ -3,7 +3,9 @@
     {
       "name": "Goblin",
       "weight": 60,
-      "paths": ["bramble_track", "shrine_road"],
+      "paths": [
+        "test_path"
+      ],
       "stats": {
         "health": 38,
         "strength": 4,
@@ -20,52 +22,6 @@
         "precision": 1,
         "experience": 2,
         "money": 2,
-        "gems": 0
-      }
-    },
-    {
-      "name": "Orc",
-      "weight": 32,
-      "paths": ["wagon_lane", "shrine_road", "cutting_pass", "ridge_run"],
-      "stats": {
-        "health": 90,
-        "strength": 8,
-        "defense": 4,
-        "precision": 70,
-        "experience": 14,
-        "money": 12,
-        "gems": 0
-      },
-      "per_level": {
-        "health": 20,
-        "strength": 2,
-        "defense": 1,
-        "precision": 1,
-        "experience": 6,
-        "money": 4,
-        "gems": 0
-      }
-    },
-    {
-      "name": "Troll",
-      "weight": 8,
-      "paths": ["cutting_pass", "ridge_run", "snow_chasm"],
-      "stats": {
-        "health": 180,
-        "strength": 11,
-        "defense": 7,
-        "precision": 80,
-        "experience": 28,
-        "money": 24,
-        "gems": 1
-      },
-      "per_level": {
-        "health": 35,
-        "strength": 2,
-        "defense": 1,
-        "precision": 1,
-        "experience": 12,
-        "money": 8,
         "gems": 0
       }
     }

@@ -1,63 +1,175 @@
 {
-  "starting_region_id": "greenhollow",
+  "starting_region_id": "greyhood_brooklin",
+  "starting_place_id": "brooklin_centre",
   "regions": [
     {
-      "id": "greenhollow",
-      "name": "Green Hollow",
-      "description": "A quiet valley of moss, old stones, and low fog where the first roads of the realm begin.",
-      "minimum_level": 1,
-      "maximum_level": 3,
-      "locations": [
-        {"id": "herbalist", "name": "Mossway Herbalist", "type": "npc", "description": "A patient healer whose shop is hidden among the roots and herbs.", "function_id": "npc_dialogue"},
-        {"id": "moss_bane", "name": "Sunlit Bane", "type": "healing_bane", "description": "A spring-fed shrine that restores health and mana to the weary.", "function_id": "healing_bane"},
-        {"id": "moss_market", "name": "Moss Market", "type": "shop", "description": "A small roadside market selling simple supplies and tools.", "function_id": "shop"}
+      "id": "greyhood_brooklin",
+      "name": "Greyhood: Brooklin",
+      "places": [
+        {
+          "id": "brooklin_centre",
+          "name": "Brooklin: Centre",
+          "description": "The central square of Brooklin, alive with merchants and travellers.",
+          "interactions": [
+            {
+              "id": "statue_of_hue",
+              "name": "Statue of Hue",
+              "description": "This humongous statue of Hue, god of humans, stands in the centre of Brooklin.",
+              "type": "location",
+              "function_id": "location"
+            },
+            {
+              "id": "brooklin_healer",
+              "name": "Rest at the Healing Bane",
+              "description": "A quiet shrine hums beneath the moonlit arches.",
+              "type": "healing_bane",
+              "function_id": "healing_bane"
+            }
+          ],
+          "exits": [
+            {
+              "id": "to_brooklin_market",
+              "name": "Walk to the market",
+              "target_place_id": "brooklin_market"
+            },
+            {
+              "id": "to_south_gate",
+              "name": "Follow the road to the south gate",
+              "target_place_id": "brooklin_south_gate"
+            }
+          ],
+          "fighting_paths": [],
+          "entry_conditions": []
+        },
+        {
+          "id": "brooklin_market",
+          "name": "Brooklin Market",
+          "description": "Canvas awnings line the crowded streets as traders call out their prices.",
+          "interactions": [
+            {
+              "id": "market_shop",
+              "name": "Browse the Travellers' Stall",
+              "description": "A merchant offers supplies for the road.",
+              "type": "shop",
+              "function_id": "shop"
+            }
+          ],
+          "exits": [
+            {
+              "id": "market_to_centre",
+              "name": "Return to the centre",
+              "target_place_id": "brooklin_centre"
+            }
+          ],
+          "fighting_paths": [],
+          "entry_conditions": []
+        },
+        {
+          "id": "brooklin_south_gate",
+          "name": "South Gate",
+          "description": "The gatehouse overlooks an old stone bridge leading beyond the city.",
+          "interactions": [
+            {
+              "id": "gate_guard",
+              "name": "Speak to the Gate Guard",
+              "description": "The guard watches the road towards Ashford.",
+              "type": "npc",
+              "function_id": "npc_dialogue"
+            }
+          ],
+          "exits": [
+            {
+              "id": "gate_to_centre",
+              "name": "Return to Brooklin Centre",
+              "target_place_id": "brooklin_centre"
+            },
+            {
+              "id": "gate_to_ashford_bridge",
+              "name": "Cross the Ashford Bridge",
+              "target_place_id": "ashford_bridge"
+            }
+          ],
+          "fighting_paths": [],
+          "entry_conditions": []
+        },
+        {
+          "id": "ashford_bridge",
+          "name": "Ashford Bridge",
+          "description": "This bridge is the boundary between Brooklin and Ashford Plains.",
+          "interactions": [],
+          "exits": [
+            {
+              "id": "bridge_to_gate",
+              "name": "Return to the South Gate",
+              "target_place_id": "brooklin_south_gate"
+            }
+          ],
+          "fighting_paths": [],
+          "entry_conditions": []
+        }
       ],
-      "fighting_paths": [
-        {"id": "bramble_track", "name": "Bramble Track", "encounters": 2, "level_adjustment": 0},
-        {"id": "shrine_road", "name": "Shrine Road", "encounters": 3, "level_adjustment": 1}
-      ],
-      "exits": [
-        {"id": "ambercross_road", "name": "Road to Ambercross", "target_region_id": "ambercross"}
+      "bridges": [
+        {
+          "place_id": "ashford_bridge",
+          "target_region_id": "ashford_plains"
+        }
       ]
     },
     {
-      "id": "ambercross",
-      "name": "Ambercross",
-      "description": "A wind-bent settlement of traders and caravan keepers, perched along the lower pass.",
-      "minimum_level": 3,
-      "maximum_level": 6,
-      "locations": [
-        {"id": "wayfinder", "name": "Stone Wayfinder", "type": "npc", "description": "A guide who reads old cairns and whispered winds.", "function_id": "npc_dialogue"},
-        {"id": "amber_healing", "name": "Amber Shrine", "type": "healing_bane", "description": "A warm stone basin of spring water that steadies the body.", "function_id": "healing_bane"}
+      "id": "ashford_plains",
+      "name": "Ashford Plains",
+      "places": [
+        {
+          "id": "ashford_crossroads",
+          "name": "Ashford Crossroads",
+          "description": "Four dusty roads meet beneath a leaning wooden signpost.",
+          "interactions": [
+            {
+              "id": "crossroads_notice",
+              "name": "Read the Notice Board",
+              "description": "Warnings about wolves and bandits have been pinned beside a map.",
+              "type": "location",
+              "function_id": "location"
+            }
+          ],
+          "exits": [
+            {
+              "id": "crossroads_to_bridge",
+              "name": "Follow the road to Greyhood",
+              "target_place_id": "crossroads_bridge"
+            }
+          ],
+          "fighting_paths": [
+            {
+              "id": "open_meadow",
+              "name": "Explore the open meadow",
+              "encounters": 4,
+              "level_adjustment": 0
+            }
+          ],
+          "entry_conditions": []
+        },
+        {
+          "id": "crossroads_bridge",
+          "name": "Westbank Bridge",
+          "description": "The crossing leads back towards Brooklin.",
+          "interactions": [],
+          "exits": [
+            {
+              "id": "westbank_to_crossroads",
+              "name": "Return to the crossroads",
+              "target_place_id": "ashford_crossroads"
+            }
+          ],
+          "fighting_paths": [],
+          "entry_conditions": []
+        }
       ],
-      "fighting_paths": [
-        {"id": "wagon_lane", "name": "Wagon Lane", "encounters": 2, "level_adjustment": 1},
-        {"id": "cutting_pass", "name": "Cutting Pass", "encounters": 3, "level_adjustment": 0}
-      ],
-      "exits": [
-        {"id": "greenhollow_road", "name": "Road to Green Hollow", "target_region_id": "greenhollow"},
-        {"id": "frostpeak_route", "name": "Pass to Frostpeak", "target_region_id": "frostpeak"}
-      ]
-    },
-    {
-      "id": "frostpeak",
-      "name": "Frostpeak",
-      "description": "A bitter mountain hold where the air bites clean and the paths grow narrow and dangerous.",
-      "minimum_level": 5,
-      "maximum_level": 10,
-      "locations": [
-        {"id": "guide", "name": "Rime Guide", "type": "npc", "description": "A mountain scout who knows every ridge and loose shelf of ice.", "function_id": "npc_dialogue"},
-        {"id": "ice_bane", "name": "Frostwell", "type": "healing_bane", "description": "A natural vent of steam-warm water hidden in the stone.", "function_id": "healing_bane"}
-      ],
-      "fighting_paths": [
-        {"id": "ridge_run", "name": "Ridge Run", "encounters": 2, "level_adjustment": 2},
-        {"id": "snow_chasm", "name": "Snow Chasm", "encounters": 3, "level_adjustment": 1}
-      ],
-      "exits": [
-        {"id": "ambercross_route", "name": "Pass to Ambercross", "target_region_id": "ambercross"}
-      ],
-      "entry_conditions": [
-        {"function_id": "minimum_level", "parameters": {"level": 5}}
+      "bridges": [
+        {
+          "place_id": "crossroads_bridge",
+          "target_region_id": "greyhood_brooklin"
+        }
       ]
     }
   ]

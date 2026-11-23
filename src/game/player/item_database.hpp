@@ -20,7 +20,7 @@ public:
   ItemDatabase();
   explicit ItemDatabase(const std::string& database_path);
   ItemDatabase(const std::string& items_path,
-               const std::string& equipment_path);
+               const std::string& equipment_directory);
 
   const std::vector<ItemDefinition>& items() const;
   const std::vector<EquipmentDefinition>& equipment() const;

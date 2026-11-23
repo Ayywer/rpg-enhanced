@@ -13,9 +13,14 @@ void Shop::loop() {
       "Items", "Armor & Accessories", "Weapons & Shields"};
   std::array<std::vector<const ItemDefinition*>, 3> stock_by_category;
   for (const ItemDefinition& definition : m_ItemDatabase.items()) {
-    stock_by_category[0].push_back(&definition);
+    if (definition.item.available_in_shop(m_ShopId)) {
+      stock_by_category[0].push_back(&definition);
+    }
   }
   for (const EquipmentDefinition& definition : m_ItemDatabase.equipment()) {
+    if (!definition.item.available_in_shop(m_ShopId)) {
+      continue;
+    }
     const auto slot = definition.item.equipment_slot;
     if (slot == EquipmentSlot::WEAPON || slot == EquipmentSlot::SHIELD) {
       stock_by_category[2].push_back(&definition);
@@ -61,8 +66,10 @@ void Shop::loop() {
         &categories, &selected_category, ftxui::MenuOption::Vertical());
     auto item_menu = ftxui::Menu(
         &item_labels, &selected_item, ftxui::MenuOption::Vertical());
+    auto shop_container =
+      ftxui::Container::Horizontal({category_menu, item_menu});
     auto selector = ftxui::CatchEvent(
-        ftxui::Container::Horizontal({category_menu, item_menu}),
+      shop_container,
         [&](ftxui::Event event) {
             if (event == ftxui::Event::Escape) {
             leave_shop = true;
@@ -80,19 +87,20 @@ void Shop::loop() {
               return true;
             }
           }
-          return false;
+          return ui::handle_navigation_key(event, shop_container);
         });
     auto renderer = ftxui::Renderer(selector, [&] {
       refresh_item_labels();
+      ftxui::Element stock_view = ftxui::hbox({
+          ui::panel("Categories", category_menu->Render() | ftxui::flex),
+          ui::panel(categories[static_cast<std::size_t>(selected_category)],
+            item_menu->Render() | ftxui::flex),
+      });
       return ui::page(
           "Smith and provisions",
           ftxui::vbox({
               wallet,
-              ftxui::hbox({
-                  ui::panel("Categories", category_menu->Render() | ftxui::flex),
-                  ui::panel(categories[static_cast<std::size_t>(selected_category)],
-                            item_menu->Render() | ftxui::flex),
-              }) | ftxui::flex,
+              std::move(stock_view) | ftxui::flex,
           }) | ftxui::flex,
           "");
     });

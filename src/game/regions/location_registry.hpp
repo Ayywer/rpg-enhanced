@@ -12,15 +12,15 @@ namespace rpg {
 class ItemDatabase;
 class Player;
 
-struct RegionLocationContext {
+struct RegionInteractionContext {
     std::shared_ptr<Player> player;
     const ItemDatabase& item_database;
 };
 
-class RegionLocationRegistry {
+class RegionInteractionRegistry {
 public:
-    using Handler = std::function<void(const RegionLocationContext&,
-                                       const RegionLocation&)>;
+    using Handler = std::function<void(const RegionInteractionContext&,
+                                       const PlaceInteraction&)>;
 
     static void register_builtin_function(std::string function_id,
                                           Handler handler);
@@ -28,8 +28,8 @@ public:
     void register_function(std::string function_id, Handler handler);
     bool contains(const std::string& function_id) const;
     void execute(const std::string& function_id,
-                 const RegionLocationContext& context,
-                 const RegionLocation& location) const;
+                 const RegionInteractionContext& context,
+                 const PlaceInteraction& interaction) const;
 
 private:
     using HandlerMap = std::unordered_map<std::string, Handler>;

@@ -6,10 +6,10 @@ namespace rpg {
 
 namespace {
 [[maybe_unused]] const bool registered = [] {
-    RegionLocationRegistry::register_builtin_function(
-        "shop", [](const RegionLocationContext& context,
-                   const RegionLocation&) {
-            Shop shop(context.player, context.item_database);
+    RegionInteractionRegistry::register_builtin_function(
+        "shop", [](const RegionInteractionContext& context,
+                   const PlaceInteraction& interaction) {
+            Shop shop(context.player, context.item_database, interaction.id);
             shop.loop();
         });
     return true;

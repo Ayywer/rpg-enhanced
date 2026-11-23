@@ -1,0 +1,37 @@
+{
+  "equipment": {
+    "Warrior": [],
+    "Lancer": [],
+    "Hunter": [],
+    "Mage": [],
+    "all_classes": [
+      {
+        "id": "silver_necklace",
+        "name": "Silver Necklace",
+        "type": "equipment",
+        "price": 10,
+        "equipment": {
+          "slot": "necklace",
+          "protection": 1,
+          "strength": 0
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "silver_ring",
+        "name": "SIlver Ring",
+        "type": "equipment",
+        "price": 12,
+        "equipment": {
+          "slot": "ring",
+          "protection": 2,
+          "strength": 0
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      }
+    ],
+    "shared_classes": []
+  }
+}

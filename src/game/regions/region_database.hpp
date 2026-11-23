@@ -7,6 +7,7 @@ namespace rpg::region_data {
 struct WorldData {
 	std::vector<Region> regions;
 	std::string starting_region_id;
+	std::string starting_place_id;
 };
 
 const WorldData& database();

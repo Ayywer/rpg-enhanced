@@ -19,25 +19,27 @@ class Game {
 public:
   Game()
     : m_EnemyGenerator(), m_PlayerClassGenerator(), m_SpellDatabase(),
-      m_ItemDatabase(RPG_ITEM_DATABASE_PATH, RPG_EQUIPMENT_DATABASE_PATH) {
+      m_ItemDatabase(RPG_ITEM_DATABASE_PATH,
+                     RPG_EQUIPMENT_DATABASE_DIRECTORY) {
     for (const Region& region : m_RegionWorld.regions()) {
-      for (const RegionLocation& location : region.locations) {
-        if (!m_RegionLocationRegistry.contains(location.function_id)) {
-          throw std::runtime_error(
-              "Region '" + region.id + "' references unknown location function '" +
-              location.function_id + "'.");
+      for (const Place& place : region.places) {
+        for (const PlaceInteraction& interaction : place.interactions) {
+          if (!m_RegionInteractionRegistry.contains(interaction.function_id)) {
+            throw std::runtime_error(
+                "Place '" + place.id + "' references unknown interaction function '" +
+                interaction.function_id + "'.");
+          }
         }
-      }
-      for (const RegionEntryCondition& condition : region.entry_conditions) {
-        if (!m_RegionEntryConditionRegistry.contains(condition.function_id)) {
-          throw std::runtime_error(
-              "Region '" + region.id +
-              "' references unknown entry-condition function '" +
-              condition.function_id + "'.");
+        for (const RegionEntryCondition& condition : place.entry_conditions) {
+          if (!m_RegionEntryConditionRegistry.contains(condition.function_id)) {
+            throw std::runtime_error(
+                "Place '" + place.id +
+                "' references unknown entry-condition function '" +
+                condition.function_id + "'.");
+          }
         }
       }
     }
-    setup();
   }
 
   void setup();
@@ -50,7 +52,7 @@ private:
   SpellDatabase m_SpellDatabase;
   ItemDatabase m_ItemDatabase;
   ItemUseRegistry m_ItemUseRegistry;
-  RegionLocationRegistry m_RegionLocationRegistry;
+  RegionInteractionRegistry m_RegionInteractionRegistry;
   RegionEntryConditionRegistry m_RegionEntryConditionRegistry;
   RegionWorld m_RegionWorld;
 };

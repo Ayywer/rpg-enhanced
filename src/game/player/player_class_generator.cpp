@@ -47,6 +47,33 @@ std::string read_string(json_object* object, const char* name,
   return json_object_get_string(value);
 }
 
+std::vector<std::string> read_starting_item_ids(json_object* entry,
+                                               const std::string& context) {
+  json_object* items = nullptr;
+  if (!json_object_object_get_ex(entry, "starting_items", &items)) {
+    return {};
+  }
+  if (!json_object_is_type(items, json_type_array)) {
+    throw std::runtime_error("Expected array 'starting_items' in " + context);
+  }
+
+  std::vector<std::string> item_ids;
+  const std::size_t count = json_object_array_length(items);
+  item_ids.reserve(count);
+  for (std::size_t index = 0; index < count; ++index) {
+    json_object* item = json_object_array_get_idx(items, index);
+    if (!json_object_is_type(item, json_type_string)) {
+      throw std::runtime_error("Expected string in 'starting_items' in " + context);
+    }
+    const std::string item_id = json_object_get_string(item);
+    if (item_id.empty()) {
+      throw std::runtime_error("Starting item IDs must not be empty in " + context);
+    }
+    item_ids.push_back(item_id);
+  }
+  return item_ids;
+}
+
 } // namespace
 
 PlayerClassGenerator::PlayerClassGenerator()
@@ -76,11 +103,9 @@ PlayerClassGenerator::PlayerClassGenerator(const std::string& database_path) {
       throw std::runtime_error("Expected object in " + context);
     }
 
-    const std::string key = read_string(entry, "key", context);
     const std::string name = read_string(entry, "name", context);
-    if (key.size() != 1 || name.empty()) {
-      throw std::runtime_error("Class key must be one character and name non-empty in " +
-                               context);
+    if (name.empty()) {
+      throw std::runtime_error("Class name must not be empty in " + context);
     }
 
     json_object* stats = require_member(entry, "stats", context);
@@ -89,7 +114,7 @@ PlayerClassGenerator::PlayerClassGenerator(const std::string& database_path) {
     }
     const std::string stats_context = context + ".stats";
     Definition definition{
-        {key.front(), name},
+      {name},
         {
             read_unsigned(stats, "health", stats_context),
             read_unsigned(stats, "strength", stats_context),
@@ -105,6 +130,7 @@ PlayerClassGenerator::PlayerClassGenerator(const std::string& database_path) {
             read_unsigned(stats, "money", stats_context),
             read_unsigned(stats, "gems", stats_context),
         },
+          read_starting_item_ids(entry, context),
     };
     if (definition.stats.health == 0 || definition.stats.max_experience == 0 ||
       definition.stats.precision > 100 ||
@@ -113,8 +139,8 @@ PlayerClassGenerator::PlayerClassGenerator(const std::string& database_path) {
       throw std::runtime_error("Invalid health or max_experience in " + context);
     }
     for (const Definition& existing : m_Definitions) {
-      if (existing.choice.key == definition.choice.key) {
-        throw std::runtime_error("Duplicate player class key in " + context);
+      if (existing.choice.name == definition.choice.name) {
+        throw std::runtime_error("Duplicate player class name in " + context);
       }
     }
 
@@ -127,9 +153,10 @@ const std::vector<PlayerClassChoice>& PlayerClassGenerator::choices() const {
   return m_Choices;
 }
 
-std::shared_ptr<Player> PlayerClassGenerator::create(char key) const {
+std::shared_ptr<Player> PlayerClassGenerator::create(
+    const std::string& class_name) const {
   for (const Definition& definition : m_Definitions) {
-    if (definition.choice.key != key) {
+    if (definition.choice.name != class_name) {
       continue;
     }
 
@@ -152,6 +179,16 @@ std::shared_ptr<Player> PlayerClassGenerator::create(char key) const {
     return player;
   }
   return nullptr;
+}
+
+std::vector<std::string> PlayerClassGenerator::starting_item_ids(
+    const std::string& class_name) const {
+  for (const Definition& definition : m_Definitions) {
+    if (definition.choice.name == class_name) {
+      return definition.starting_item_ids;
+    }
+  }
+  return {};
 }
 
 } // namespace rpg

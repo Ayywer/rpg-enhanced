@@ -6,14 +6,13 @@
 int main() {
   rpg::PlayerClassGenerator generator(RPG_PLAYER_CLASS_DATABASE_PATH);
   const auto& choices = generator.choices();
-  if (choices.size() != 2 || choices[0].key != 'f' ||
-      choices[0].name != "Fighter" || choices[1].key != 'm' ||
+  if (choices.size() != 2 || choices[0].name != "Fighter" ||
       choices[1].name != "Magician") {
     std::cerr << "Player class choices do not match the database\n";
     return 1;
   }
 
-  const std::shared_ptr<rpg::Player> fighter = generator.create('f');
+  const std::shared_ptr<rpg::Player> fighter = generator.create("Fighter");
   if (!fighter || fighter->m_ClassName != "Fighter" ||
       fighter->m_Health != 100 || fighter->m_MaxHealth != 100 ||
       fighter->m_Strength != 10 || fighter->m_Intelligence != 5 ||
@@ -24,8 +23,13 @@ int main() {
     std::cerr << "Fighter stats do not match the database\n";
     return 1;
   }
+  if (generator.starting_item_ids("Fighter") !=
+      std::vector<std::string>{"iron-chestplate", "iron-sword", "iron-shield"}) {
+    std::cerr << "Fighter starting items do not match the database\n";
+    return 1;
+  }
 
-  const std::shared_ptr<rpg::Player> magician = generator.create('m');
+  const std::shared_ptr<rpg::Player> magician = generator.create("Magician");
   if (!magician || magician->m_ClassName != "Magician" ||
       magician->m_Health != 50 || magician->m_MaxHealth != 50 ||
       magician->m_Strength != 5 || magician->m_Intelligence != 10 ||
@@ -35,9 +39,14 @@ int main() {
     std::cerr << "Magician stats do not match the database\n";
     return 1;
   }
+  if (generator.starting_item_ids("Magician") !=
+      std::vector<std::string>{"silver-necklace", "ruby-ring"}) {
+    std::cerr << "Magician starting items do not match the database\n";
+    return 1;
+  }
 
-  if (generator.create('?')) {
-    std::cerr << "Unknown class key should not create a player\n";
+  if (generator.create("Unknown")) {
+    std::cerr << "Unknown class name should not create a player\n";
     return 1;
   }
   return 0;

@@ -17,24 +17,24 @@ ftxui::Element battle_status(const std::shared_ptr<Player>& player,
   const auto player_panel = ui::panel(
     "YOU  /  " + player->m_ClassName,
     ftxui::vbox({
-      ui::meter("HEALTH", static_cast<std::uint64_t>(player->m_Health), player->m_MaxHealth, ftxui::Color::Green),
-      ui::meter("MANA", player->m_Mana, player->m_MaxMana, ftxui::Color::BlueViolet),
-      ftxui::text("LEVEL " + std::to_string(player->m_Level)) | ftxui::color(ftxui::Color::Violet),
+      ui::meter("HEALTH", static_cast<std::uint64_t>(player->m_Health), player->m_MaxHealth, ui::health_color()),
+      ui::meter("MANA", player->m_Mana, player->m_MaxMana, ui::mana_color()),
+      ftxui::text("LEVEL " + std::to_string(player->m_Level)) | ftxui::color(ui::text_color()),
 
     }),
-    ftxui::Color::RGB(91, 205, 183));
+    ui::accent_color());
 
   const auto enemy_panel = ui::panel(
     "FOE  /  " + enemy->m_Name,
     ftxui::vbox({
-      ui::meter("HEALTH", static_cast<std::uint64_t>( std::max<std::int64_t>(0, enemy->m_Health)), enemy->m_MaxHealth, ftxui::Color::Red),
-      ftxui::text("LEVEL  " + std::to_string(enemy->m_Level)) | ftxui::color(ftxui::Color::GrayLight),
-      ftxui::text(""),
-      ftxui::text("STRENGTH  " + std::to_string(enemy->m_Strength)) | ftxui::color(ftxui::Color::GrayLight),
-      ftxui::text("DEFENCE  " + std::to_string(enemy->m_Defense)) | ftxui::color(ftxui::Color::GrayLight),
-      ftxui::text("PRECISION  " + std::to_string(enemy->m_Precision) + "%") | ftxui::color(ftxui::Color::GrayLight),
+      ui::meter("HEALTH", static_cast<std::uint64_t>( std::max<std::int64_t>(0, enemy->m_Health)), enemy->m_MaxHealth, ui::error_color()),
+      ftxui::text("LEVEL  " + std::to_string(enemy->m_Level)) | ftxui::color(ui::text_color()),
+      ui::spacer(),
+      ftxui::text("STRENGTH  " + std::to_string(enemy->m_Strength)) | ftxui::color(ui::text_color()),
+      ftxui::text("DEFENCE  " + std::to_string(enemy->m_Defense)) | ftxui::color(ui::text_color()),
+      ftxui::text("PRECISION  " + std::to_string(enemy->m_Precision) + "%") | ftxui::color(ui::text_color()),
     }),
-    ftxui::Color::RGB(224, 95, 91));
+    ui::error_color());
   return ftxui::hbox({player_panel, enemy_panel});
 }
 
@@ -91,8 +91,8 @@ void Fight::loop() {
       context.message.clear();
       if (m_Actions.execute(static_cast<std::size_t>(selected), context) ==
           FightActionResult::RETRY) {
-        ui::notify("Action unavailable", context.message,
-                   ftxui::Color::RGB(232, 166, 76));
+        ui::notify("Action unavailable", ui::combat_log_message(context.message),
+             ui::warning_color());
         continue;
       }
 
@@ -103,13 +103,13 @@ void Fight::loop() {
       context.message += "\nMana regenerated: +" +
                          std::to_string(m_pPlayer->m_ManaRegenerationMultiplier) +
                          ".";
-      ui::notify("Your turn", context.message);
+      ui::notify("Your turn", ui::combat_log_message(context.message));
       players_turn = false;
     } else {
       context.message.clear();
       perform_enemy_turn(context);
-      ui::notify("Enemy turn", context.message,
-                 ftxui::Color::RGB(224, 95, 91));
+      ui::notify("Enemy turn", ui::combat_log_message(context.message),
+             ui::error_color());
       players_turn = true;
     }
 
@@ -148,9 +148,9 @@ void Fight::loop() {
 
       result += ".";
     }
-    ui::notify("Victory", result, ftxui::Color::RGB(91, 205, 183));
+    ui::notify("Victory", ui::combat_log_message(result), ui::success_color());
   } else {
-    ui::notify("GAME OVER", "You were defeated by " + m_pEnemy->m_Name + ".", ftxui::Color::RGB(224, 95, 91));
+    ui::notify("GAME OVER", "You were defeated by " + m_pEnemy->m_Name + ".", ui::error_color());
   }
 }
 } // namespace rpg

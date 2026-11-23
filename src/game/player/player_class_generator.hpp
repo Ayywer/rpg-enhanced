@@ -9,7 +9,6 @@
 namespace rpg {
 
 struct PlayerClassChoice {
-  char key;
   std::string name;
 };
 
@@ -19,7 +18,9 @@ public:
   explicit PlayerClassGenerator(const std::string& database_path);
 
   const std::vector<PlayerClassChoice>& choices() const;
-  std::shared_ptr<Player> create(char key) const;
+  std::shared_ptr<Player> create(const std::string& class_name) const;
+  std::vector<std::string> starting_item_ids(
+      const std::string& class_name) const;
 
 private:
   struct Stats {
@@ -41,6 +42,7 @@ private:
   struct Definition {
     PlayerClassChoice choice;
     Stats stats;
+    std::vector<std::string> starting_item_ids;
   };
 
   std::vector<Definition> m_Definitions;

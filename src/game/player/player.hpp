@@ -5,6 +5,7 @@
 #include "item.hpp"
 
 // std
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -67,6 +68,12 @@ public:
       if (stack.item.id != item_id || stack.item.type != ItemType::EQUIPMENT ||
           !stack.item.equipment_slot || stack.quantity == 0) {
         continue;
+      }
+      if (!stack.item.allowed_classes.empty() &&
+          std::find(stack.item.allowed_classes.begin(),
+                    stack.item.allowed_classes.end(), m_ClassName) ==
+              stack.item.allowed_classes.end()) {
+        return false;
       }
       const EquipmentSlot slot = *stack.item.equipment_slot;
       const Item equipped_item = stack.item;

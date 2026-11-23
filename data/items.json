@@ -8,7 +8,8 @@
             "use_function": "healing_potion",
             "power": 24,
             "max_quantity": 5,
-            "price": 4
+            "price": 4,
+            "available_in_shop": ["test_shop"]
         },
         {
             "id": "mana-potion",
@@ -18,7 +19,8 @@
             "use_function": "mana_potion",
             "power": 16,
             "max_quantity": 5,
-            "price": 4
+            "price": 4,
+            "available_in_shop": ["test_shop"]
         },
         {
             "id": "fire-scroll",
@@ -29,7 +31,8 @@
             "spell_id": "fire_scroll",
             "power": 0,
             "max_quantity": 1,
-            "price": 7
+            "price": 7,
+            "available_in_shop": []
         },
         {
             "id": "lightning-scroll",
@@ -40,7 +43,8 @@
             "spell_id": "thunder_strike",
             "power": 0,
             "max_quantity": 1,
-            "price": 18
+            "price": 18,
+            "available_in_shop": []
         },
         {
             "id": "amber-relic",
@@ -51,6 +55,7 @@
             "power": 0,
             "max_quantity": 1,
             "price": 20,
+            "available_in_shop": [],
             "bonuses": {
                 "strength": 2,
                 "defense": 1

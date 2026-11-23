@@ -131,20 +131,14 @@ std::vector<RegionEntryCondition> read_entry_conditions(
   return result;
 }
 
-RegionLocationType read_location_type(json_object *object,
-                                      const std::string &context) {
+PlaceInteractionType read_interaction_type(json_object *object,
+                                          const std::string &context) {
   const std::string type = read_string(object, "type", context);
-  if (type == "shop") {
-    return RegionLocationType::Shop;
-  }
-  if (type == "npc") {
-    return RegionLocationType::Npc;
-  }
-  if (type == "healing_bane") {
-    return RegionLocationType::HealingBane;
-  }
-  throw std::runtime_error("Unknown location type '" + type + "' in " +
-                           context);
+  if (type == "shop") return PlaceInteractionType::Shop;
+  if (type == "npc") return PlaceInteractionType::Npc;
+  if (type == "healing_bane") return PlaceInteractionType::HealingBane;
+  if (type == "location") return PlaceInteractionType::Location;
+  throw std::runtime_error("Unknown interaction type '" + type + "' in " + context);
 }
 
 WorldData load_database() {
@@ -156,6 +150,14 @@ WorldData load_database() {
 
   WorldData data;
   data.starting_region_id = read_string(root.get(), "starting_region_id", path);
+  json_object *starting_place = nullptr;
+  if (json_object_object_get_ex(root.get(), "starting_place_id",
+                                &starting_place)) {
+    if (!json_object_is_type(starting_place, json_type_string)) {
+      throw std::runtime_error("Expected string 'starting_place_id' in " + path);
+    }
+    data.starting_place_id = json_object_get_string(starting_place);
+  }
   json_object *regions = require_array(root.get(), "regions", path);
   const std::size_t region_count = json_object_array_length(regions);
   data.regions.reserve(region_count);
@@ -169,65 +171,97 @@ WorldData load_database() {
     Region region{
         read_string(region_object, "id", context),
         read_string(region_object, "name", context),
-        read_string(region_object, "description", context),
-        read_unsigned(region_object, "minimum_level", context),
-        read_unsigned(region_object, "maximum_level", context),
-        {},
-        {},
         {},
         {},
     };
 
-    json_object *locations = require_array(region_object, "locations", context);
-    for (std::size_t item = 0; item < json_object_array_length(locations);
-         ++item) {
-      json_object *entry = json_object_array_get_idx(locations, item);
-      const std::string item_context =
-          context + ".locations[" + std::to_string(item) + "]";
-      if (!json_object_is_type(entry, json_type_object)) {
-        throw std::runtime_error("Expected object in " + item_context);
+    json_object *places = require_array(region_object, "places", context);
+    for (std::size_t item = 0; item < json_object_array_length(places); ++item) {
+      json_object *place_object = json_object_array_get_idx(places, item);
+      const std::string place_context =
+          context + ".places[" + std::to_string(item) + "]";
+      if (!json_object_is_type(place_object, json_type_object)) {
+        throw std::runtime_error("Expected object in " + place_context);
       }
-      region.locations.push_back({
-          read_string(entry, "id", item_context),
-          read_string(entry, "name", item_context),
-          read_location_type(entry, item_context),
-          read_string(entry, "description", item_context),
-          read_string(entry, "function_id", item_context),
+
+      Place place{
+          read_string(place_object, "id", place_context),
+          read_string(place_object, "name", place_context),
+          read_string(place_object, "description", place_context),
+          {}, {}, {}, {},
+      };
+
+      json_object *interactions =
+          require_array(place_object, "interactions", place_context);
+      for (std::size_t place_item = 0;
+           place_item < json_object_array_length(interactions); ++place_item) {
+        json_object *entry = json_object_array_get_idx(interactions, place_item);
+        const std::string item_context =
+            place_context + ".interactions[" + std::to_string(place_item) + "]";
+        if (!json_object_is_type(entry, json_type_object)) {
+          throw std::runtime_error("Expected object in " + item_context);
+        }
+        place.interactions.push_back({
+            read_string(entry, "id", item_context),
+            read_string(entry, "name", item_context),
+            read_interaction_type(entry, item_context),
+            read_string(entry, "description", item_context),
+            read_string(entry, "function_id", item_context),
+        });
+      }
+
+      json_object *place_paths =
+          require_array(place_object, "fighting_paths", place_context);
+      for (std::size_t place_item = 0;
+           place_item < json_object_array_length(place_paths); ++place_item) {
+        json_object *entry = json_object_array_get_idx(place_paths, place_item);
+        const std::string item_context =
+            place_context + ".fighting_paths[" + std::to_string(place_item) + "]";
+        if (!json_object_is_type(entry, json_type_object)) {
+          throw std::runtime_error("Expected object in " + item_context);
+        }
+        place.fighting_paths.push_back({
+            read_string(entry, "id", item_context),
+            read_string(entry, "name", item_context),
+            read_unsigned(entry, "encounters", item_context),
+            read_int(entry, "level_adjustment", item_context),
+        });
+      }
+
+      json_object *place_exits =
+          require_array(place_object, "exits", place_context);
+      for (std::size_t place_item = 0;
+           place_item < json_object_array_length(place_exits); ++place_item) {
+        json_object *entry = json_object_array_get_idx(place_exits, place_item);
+        const std::string item_context =
+            place_context + ".exits[" + std::to_string(place_item) + "]";
+        if (!json_object_is_type(entry, json_type_object)) {
+          throw std::runtime_error("Expected object in " + item_context);
+        }
+        place.exits.push_back({
+            read_string(entry, "id", item_context),
+            read_string(entry, "name", item_context),
+            read_string(entry, "target_place_id", item_context),
+        });
+      }
+      place.entry_conditions = read_entry_conditions(place_object, place_context);
+      region.places.push_back(std::move(place));
+    }
+
+    json_object *bridges = require_array(region_object, "bridges", context);
+    for (std::size_t item = 0; item < json_object_array_length(bridges); ++item) {
+      json_object *bridge = json_object_array_get_idx(bridges, item);
+      const std::string bridge_context =
+          context + ".bridges[" + std::to_string(item) + "]";
+      if (!json_object_is_type(bridge, json_type_object)) {
+        throw std::runtime_error("Expected object in " + bridge_context);
+      }
+      region.bridges.push_back({
+          read_string(bridge, "place_id", bridge_context),
+          read_string(bridge, "target_region_id", bridge_context),
       });
     }
 
-    json_object *paths =
-        require_array(region_object, "fighting_paths", context);
-    for (std::size_t item = 0; item < json_object_array_length(paths); ++item) {
-      json_object *entry = json_object_array_get_idx(paths, item);
-      const std::string item_context =
-          context + ".fighting_paths[" + std::to_string(item) + "]";
-      if (!json_object_is_type(entry, json_type_object)) {
-        throw std::runtime_error("Expected object in " + item_context);
-      }
-      region.fighting_paths.push_back({
-          read_string(entry, "id", item_context),
-          read_string(entry, "name", item_context),
-          read_unsigned(entry, "encounters", item_context),
-          read_int(entry, "level_adjustment", item_context),
-      });
-    }
-
-    json_object *exits = require_array(region_object, "exits", context);
-    for (std::size_t item = 0; item < json_object_array_length(exits); ++item) {
-      json_object *entry = json_object_array_get_idx(exits, item);
-      const std::string item_context =
-          context + ".exits[" + std::to_string(item) + "]";
-      if (!json_object_is_type(entry, json_type_object)) {
-        throw std::runtime_error("Expected object in " + item_context);
-      }
-      region.exits.push_back({
-          read_string(entry, "id", item_context),
-          read_string(entry, "name", item_context),
-          read_string(entry, "target_region_id", item_context),
-      });
-    }
-    region.entry_conditions = read_entry_conditions(region_object, context);
     data.regions.push_back(std::move(region));
   }
   return data;

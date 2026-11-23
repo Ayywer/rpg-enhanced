@@ -1,0 +1,563 @@
+{
+  "equipment": {
+    "Warrior": [
+      {
+        "id": "iron_sword",
+        "name": "Iron Sword",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [
+          "test_shop"
+        ],
+        "passive_ability": "none"
+      },
+      {
+        "id": "silver_sword",
+        "name": "Silver Sword",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [
+          "test_shop"
+        ],
+        "passive_ability": "none"
+      },
+      {
+        "id": "ddtb",
+        "name": "Double Deck Topaz Blade",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "dsogh",
+        "name": "Diamond Sword of Greyhood",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "nbog",
+        "name": "Nature's Blade of Grass",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "the_chirata",
+        "name": "The Chirata",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "venoms_kiss",
+        "name": "Venom's Kiss",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "sotd",
+        "name": "Sword of The Dead",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "dragonblade_gy",
+        "name": "DragonBlade (grey)",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "dragonblade_gn",
+        "name": "DragonBlade (green)",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "dragonblade_o",
+        "name": "DragonBlade (orange)",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "dragonblade_b",
+        "name": "DragonBlade (blue)",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "dragon_eternity",
+        "name": "Dragon Eternity",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "the_midas",
+        "name": "The Midas",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "shmools_leg",
+        "name": "Shmool's Leg",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "cobblesword",
+        "name": "CobbleSword",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "madeofscrap",
+        "name": "MadeOfScraps",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "poop_sword",
+        "name": "Poop Sword",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "dirt_sword",
+        "name": "Dirt Sword",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      }
+    ],
+    "Lancer": [
+      {
+        "id": "iron_spear",
+        "name": "Iron Spear",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [
+          "test_shop"
+        ],
+        "passive_ability": "none"
+      },
+      {
+        "id": "silver_spear",
+        "name": "Iron Spear",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [
+          "test_shop"
+        ],
+        "passive_ability": "none"
+      },
+      {
+        "id": "locs",
+        "name": "Lance of Critical Strike",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "royal_guard",
+        "name": "Royal Guard",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "asonc",
+        "name": "Adamite Spear of Nature's Corner",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "los",
+        "name": "Lance of Stone",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "lod",
+        "name": "Lance of Dead",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "lol",
+        "name": "Lance of Life",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "lodr",
+        "name": "Lance of Dream",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "rainbow_dash",
+        "name": "Rainbow Dash",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "devils_touch",
+        "name": "Devil's Touch",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "sop",
+        "name": "Spear of Pearls",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "sharan",
+        "name": "Sharan",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "cobblespear",
+        "name": "CobbleSpear",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "madeoftrash",
+        "name": "MadeOfTrash",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "poop_on_stick",
+        "name": "Poop on Stick",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "szisz_kebab",
+        "name": "Shish Kebab",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      }
+    ],
+    "Hunter": [
+      {
+        "id": "common_bow",
+        "name": "Common Bow",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [
+          "test_shop"
+        ],
+        "passive_ability": "none"
+      },
+      {
+        "id": "natures_bow",
+        "name": "Nature's Bow",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [
+          "test_shop"
+        ],
+        "passive_ability": "none"
+      },
+      {
+        "id": "photosynthesis",
+        "name": "Photosynthesis",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      }
+    ],
+    "Mage": [
+      {
+        "id": "crooked_rod",
+        "name": "Crooked Rod",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [
+          "test_shop"
+        ],
+        "passive_ability": "none"
+      },
+      {
+        "id": "iron_rod",
+        "name": "Iron Rod",
+        "type": "equipment",
+        "price": 16,
+        "equipment": {
+          "slot": "weapon",
+          "protection": 0,
+          "strength": 3
+        },
+        "available_in_shops": [
+          "test_shop"
+        ],
+        "passive_ability": "none"
+      }
+    ],
+    "all_classes": [],
+    "shared_classes": []
+  }
+}

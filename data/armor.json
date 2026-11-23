@@ -1,0 +1,156 @@
+{
+  "equipment": {
+    "Warrior": [],
+    "Lancer": [],
+    "Hunter": [
+      {
+        "id": "hunters_tunic",
+        "name": "Hunter's Tunic",
+        "type": "equipment",
+        "price": 12,
+        "equipment": {
+          "slot": "chestplate",
+          "protection": 2,
+          "strength": 0
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "natures_tunic",
+        "name": "Nature's Tunic",
+        "type": "equipment",
+        "price": 12,
+        "equipment": {
+          "slot": "chestplate",
+          "protection": 2,
+          "strength": 0
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      }
+    ],
+    "Mage": [
+      {
+        "id": "common_hood",
+        "name": "Common Hood",
+        "type": "equipment",
+        "price": 12,
+        "equipment": {
+          "slot": "helmet",
+          "protection": 2,
+          "strength": 0
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "common_raiment",
+        "name": "Common Raiment",
+        "type": "equipment",
+        "price": 12,
+        "equipment": {
+          "slot": "chestplate",
+          "protection": 2,
+          "strength": 0
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "higher_raiment",
+        "name": "Higher Raiment",
+        "type": "equipment",
+        "price": 12,
+        "equipment": {
+          "slot": "chestplate",
+          "protection": 2,
+          "strength": 0
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      }
+    ],
+    "all_classes": [
+      {
+        "id": "leather_boots",
+        "name": "Leather Boots",
+        "type": "equipment",
+        "price": 12,
+        "equipment": {
+          "slot": "boots",
+          "protection": 2,
+          "strength": 0
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "common_sandals",
+        "name": "Common Sandals",
+        "type": "equipment",
+        "price": 12,
+        "equipment": {
+          "slot": "boots",
+          "protection": 2,
+          "strength": 0
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      }
+    ],
+    "shared_classes": [
+      {
+        "id": "iron_helmet",
+        "name": "Iron Helmet",
+        "type": "equipment",
+        "price": 12,
+        "equipment": {
+          "slot": "helmet",
+          "protection": 2,
+          "strength": 0,
+          "allowed_classes": [
+            "Warrior",
+            "Lancer"
+          ]
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "iron_chestplate",
+        "name": "Iron Chestplate",
+        "type": "equipment",
+        "price": 15,
+        "equipment": {
+          "slot": "chestplate",
+          "protection": 3,
+          "strength": 0,
+          "allowed_classes": [
+            "Warrior",
+            "Lancer"
+          ]
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      },
+      {
+        "id": "iron_boots",
+        "name": "Iron Boots",
+        "type": "equipment",
+        "price": 10,
+        "equipment": {
+          "slot": "boots",
+          "protection": 2,
+          "strength": 0,
+          "allowed_classes": [
+            "Warrior",
+            "Lancer"
+          ]
+        },
+        "available_in_shops": [],
+        "passive_ability": "none"
+      }
+    ]
+  }
+}

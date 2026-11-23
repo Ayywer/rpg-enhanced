@@ -9,13 +9,13 @@ namespace rpg {
 
 namespace {
 [[maybe_unused]] const bool registered = [] {
-    RegionLocationRegistry::register_builtin_function(
-        "npc_dialogue", [](const RegionLocationContext&,
-                           const RegionLocation& location) {
+    RegionInteractionRegistry::register_builtin_function(
+        "npc_dialogue", [](const RegionInteractionContext&,
+                           const PlaceInteraction& interaction) {
             const std::vector<NpcDialogueOption>& options =
-                NpcDialogueRegistry::options_for(location.id);
+                NpcDialogueRegistry::options_for(interaction.id);
             if (options.empty()) {
-                ui::notify(location.name, location.description);
+                ui::notify(interaction.name, interaction.description);
                 return;
             }
 
@@ -27,8 +27,8 @@ namespace {
             choices.push_back("Leave");
 
             const int selected = ui::choose_option(
-                location.name, choices,
-                ftxui::text(location.description) |
+                interaction.name, choices,
+                ftxui::text(interaction.description) |
                     ftxui::color(ftxui::Color::GrayLight));
             if (selected < 0 || selected >= static_cast<int>(options.size())) {
                 return;

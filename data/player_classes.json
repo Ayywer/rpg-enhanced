@@ -1,38 +1,94 @@
 {
   "classes": [
     {
-      "key": "f",
-      "name": "Fighter",
+      "name": "Warrior",
+      "starting_items": [
+        "iron_chestplate",
+        "iron_boots",
+        "iron_sword"
+      ],
       "stats": {
         "health": 100,
+        "defense": 100,
         "strength": 10,
-        "intelligence": 5,
-        "defense": 5,
-        "precision": 95,
+        "intelligence": 10,
+        "precision": 10,
         "mana": 0,
-        "max_mana": 5,
-        "mana_regeneration": 1,
+        "max_mana": 10,
+        "mana_regeneration": 5,
         "experience": 0,
-        "max_experience": 10,
+        "max_experience":100,
         "level": 1,
         "money": 0,
         "gems": 0
       }
     },
     {
-      "key": "m",
-      "name": "Magician",
+      "name": "Lancer",
+      "starting_items": [
+        "iron_helmet",
+        "iron_chestplate",
+        "iron_spear",
+        "healing-potion"
+      ],
       "stats": {
-        "health": 50,
-        "strength": 5,
+        "health": 100,
+        "defense": 100,
+        "strength": 10,
         "intelligence": 10,
-        "defense": 1,
-        "precision": 85,
+        "precision": 10,
         "mana": 0,
-        "max_mana": 25,
-        "mana_regeneration": 2,
+        "max_mana": 10,
+        "mana_regeneration": 5,
         "experience": 0,
-        "max_experience": 10,
+        "max_experience":100,
+        "level": 1,
+        "money": 0,
+        "gems": 0
+      }
+    },
+    {
+      "name": "Hunter",
+      "starting_items": [
+        "hunters_tunic",
+        "leather_boots",
+        "common_bow"
+      ],
+      "stats": {
+        "health": 100,
+        "defense": 100,
+        "strength": 10,
+        "intelligence": 10,
+        "precision": 10,
+        "mana": 0,
+        "max_mana": 10,
+        "mana_regeneration": 5,
+        "experience": 0,
+        "max_experience":100,
+        "level": 1,
+        "money": 0,
+        "gems": 0
+      }
+    },
+    {
+      "name": "Mage",
+      "starting_items": [
+        "common_hood",
+        "common_raiment",
+        "common_sandals",
+        "crooked_rod"
+      ],
+      "stats": {
+        "health": 100,
+        "defense": 100,
+        "strength": 10,
+        "intelligence": 10,
+        "precision": 10,
+        "mana": 0,
+        "max_mana": 10,
+        "mana_regeneration": 5,
+        "experience": 0,
+        "max_experience":100,
         "level": 1,
         "money": 0,
         "gems": 0

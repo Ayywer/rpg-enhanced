@@ -1,9 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace rpg {
 
@@ -48,17 +50,25 @@ struct Item {
 
   std::string id;
   std::string name;
-  ItemType type;
-  ItemEffect effect;
-  std::uint64_t power;
-  std::uint64_t max_quantity;
+  ItemType type = ItemType::POTION;
+  ItemEffect effect = ItemEffect::HEAL;
+  std::uint64_t power = 0;
+  std::uint64_t max_quantity = 1;
   std::optional<EquipmentSlot> equipment_slot{};
   std::uint64_t protection = 0;
   std::uint64_t strength = 0;
+  std::vector<std::string> allowed_classes{};
   std::string use_function;
   std::string spell_id;
   std::uint64_t bonus_strength = 0;
   std::uint64_t bonus_defense = 0;
+  std::string passive_ability;
+  std::vector<std::string> available_in_shops{};
+
+  bool available_in_shop(const std::string& shop_id) const {
+    return std::find(available_in_shops.begin(), available_in_shops.end(),
+                     shop_id) != available_in_shops.end();
+  }
 };
 
 struct ItemStack {
